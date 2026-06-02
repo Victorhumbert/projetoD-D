@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useCharacterStore } from '@/store';
+import { useCharacter } from '@/hooks/useCharacter';
 import { useHydration } from '@/hooks/useHydration';
 import { SlotTracker } from '@/components/magias/SlotTracker';
 import { SlotConfig } from '@/components/magias/SlotConfig';
@@ -18,7 +19,7 @@ import {
   calcBonusAtaqueMagia,
   formatModificador,
 } from '@/domain/calc';
-import type { Character, MagiaConhecida, Habilidade } from '@/types/character';
+import type { MagiaConhecida, Habilidade } from '@/types/character';
 
 export default function MagiasPage() {
   const hydrated = useHydration();
@@ -29,22 +30,7 @@ export default function MagiasPage() {
     Record<string, boolean>
   >({});
 
-  const character = useCharacterStore(
-    (s): Character => ({
-      id: s.characterId,
-      versaoSchema: s.versaoSchema,
-      identificacao: s.identificacao,
-      combate: s.combate,
-      testesMorte: s.testesMorte,
-      atributos: s.atributos,
-      testesResistencia: s.testesResistencia,
-      pericias: s.pericias,
-      magias: s.magias,
-      habilidades: s.habilidades,
-      inventario: s.inventario,
-      atualizadoEm: s.atualizadoEm,
-    })
-  );
+  const character = useCharacter();
 
   const atributoConjuracao = useCharacterStore(
     (s) => s.magias.atributoConjuracao

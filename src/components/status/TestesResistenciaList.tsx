@@ -1,29 +1,16 @@
 'use client';
 
 import { useCharacterStore } from '@/store';
+import { useCharacter } from '@/hooks/useCharacter';
 import { ProficiencyToggle } from '@/components/ui/ProficiencyToggle';
 import { ATRIBUTOS_CONFIG, ATRIBUTOS_ORDEM } from '@/domain/constants';
 import { calcBonusTesteResistencia, formatModificador } from '@/domain/calc';
-import type { Character } from '@/types/character';
 
 /**
  * Lista os 6 testes de resistência com toggle de proficiência e bônus calculado.
  */
 export function TestesResistenciaList() {
-  const character = useCharacterStore((s): Character => ({
-    id: s.characterId,
-    versaoSchema: s.versaoSchema,
-    identificacao: s.identificacao,
-    combate: s.combate,
-    testesMorte: s.testesMorte,
-    atributos: s.atributos,
-    testesResistencia: s.testesResistencia,
-    pericias: s.pericias,
-    magias: s.magias,
-    habilidades: s.habilidades,
-    inventario: s.inventario,
-    atualizadoEm: s.atualizadoEm,
-  }));
+  const character = useCharacter();
   const toggleTesteResistencia = useCharacterStore(
     (s) => s.toggleTesteResistencia
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCharacterStore } from '@/store';
+import { useCharacter } from '@/hooks/useCharacter';
 import { useHydration } from '@/hooks/useHydration';
 import { AtributoCard } from '@/components/status/AtributoCard';
 import { BarraVida } from '@/components/status/BarraVida';
@@ -13,7 +14,6 @@ import {
   calcIniciativa,
   formatModificador,
 } from '@/domain/calc';
-import type { Character } from '@/types/character';
 import { cn } from '@/lib/utils';
 
 function XpProgressBar({ xp, nivel }: { xp: number; nivel: number }) {
@@ -60,23 +60,7 @@ export default function StatusPage() {
   const setCombate = useCharacterStore((s) => s.setCombate);
   const setIdentificacao = useCharacterStore((s) => s.setIdentificacao);
 
-  // Para cálculos derivados precisamos de um Character snapshot
-  const character = useCharacterStore(
-    (s): Character => ({
-      id: s.characterId,
-      versaoSchema: s.versaoSchema,
-      identificacao: s.identificacao,
-      combate: s.combate,
-      testesMorte: s.testesMorte,
-      atributos: s.atributos,
-      testesResistencia: s.testesResistencia,
-      pericias: s.pericias,
-      magias: s.magias,
-      habilidades: s.habilidades,
-      inventario: s.inventario,
-      atualizadoEm: s.atualizadoEm,
-    })
-  );
+  const character = useCharacter();
 
   const bp = calcBonusProficiencia(identificacao.nivel);
   const iniciativa = calcIniciativa(character);

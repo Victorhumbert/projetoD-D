@@ -1,32 +1,16 @@
 'use client';
 
-import { useCharacterStore } from '@/store';
+import { useCharacter } from '@/hooks/useCharacter';
 import { useHydration } from '@/hooks/useHydration';
 import { PericiaRow } from '@/components/pericias/PericiaRow';
 import { Card } from '@/components/ui/Card';
 import { PERICIAS_ORDEM } from '@/domain/constants';
 import { calcPercepacaoPassiva } from '@/domain/calc';
-import type { Character } from '@/types/character';
 
 export default function PericiasPage() {
   const hydrated = useHydration();
 
-  const character = useCharacterStore(
-    (s): Character => ({
-      id: s.characterId,
-      versaoSchema: s.versaoSchema,
-      identificacao: s.identificacao,
-      combate: s.combate,
-      testesMorte: s.testesMorte,
-      atributos: s.atributos,
-      testesResistencia: s.testesResistencia,
-      pericias: s.pericias,
-      magias: s.magias,
-      habilidades: s.habilidades,
-      inventario: s.inventario,
-      atualizadoEm: s.atualizadoEm,
-    })
-  );
+  const character = useCharacter();
 
   const percepcaoPassiva = calcPercepacaoPassiva(character);
 
