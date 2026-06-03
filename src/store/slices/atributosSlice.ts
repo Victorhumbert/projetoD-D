@@ -10,6 +10,8 @@ export interface AtributosSlice {
   testesResistencia: TestesResistencia;
   setAtributo: (nome: AtributoNome, valor: number) => void;
   toggleTesteResistencia: (nome: AtributoNome) => void;
+  /** Reseta todos para false e marca os dois atributos da classe como proficientes. */
+  setTestesResistenciaDaClasse: (atributos: [AtributoNome, AtributoNome]) => void;
 }
 
 const atributosDefault: Atributos = {
@@ -52,6 +54,19 @@ export const createAtributosSlice: StateCreator<
         [nome]: {
           proficiente: !state.testesResistencia[nome].proficiente,
         },
+      },
+    })),
+  setTestesResistenciaDaClasse: ([a, b]) =>
+    set(() => ({
+      testesResistencia: {
+        forca: { proficiente: false },
+        destreza: { proficiente: false },
+        constituicao: { proficiente: false },
+        inteligencia: { proficiente: false },
+        sabedoria: { proficiente: false },
+        carisma: { proficiente: false },
+        [a]: { proficiente: true },
+        [b]: { proficiente: true },
       },
     })),
 });
