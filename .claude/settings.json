@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_comment": "Configuração de segurança do projeto. Hooks bloqueiam comandos destrutivos e edição em arquivos sensíveis ANTES da execução. Veja PERMISSIONS.md para detalhes.",
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/pre-bash-firewall.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/pre-edit-protect-paths.sh"
+          }
+        ]
+      }
+    ]
+  },
+
+  "permissions": {
+    "_comment": "Listas de allow/deny aplicam-se sobre o permission system nativo do Claude Code. Comandos no deny exigem confirmação humana mesmo em modo acceptEdits.",
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)",
+      "Bash(npm publish *)",
+      "Bash(pnpm publish *)",
+      "Bash(yarn publish *)",
+      "Bash(kubectl delete *)",
+      "Bash(terraform destroy *)",
+      "Bash(terraform apply *)",
+      "Edit(.env*)",
+      "Write(.env*)",
+      "Edit(.git/*)",
+      "Write(.git/*)"
+    ]
+  }
+}
