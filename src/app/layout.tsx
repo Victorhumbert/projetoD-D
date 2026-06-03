@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "D&D 5e — Gerenciador de Personagem",
   description: "Ficha digital de personagem para Dungeons & Dragons 5a Edição.",
   icons: {
-    icon: "/favicon.jpg",
+    icon: "/favicon.png",
   },
   openGraph: {
     title: "D&D 5e — Gerenciador de Personagem",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: "D&D 5e — Gerenciador de Personagem",
     images: [
       {
-        url: "/favicon.jpg", 
+        url: "/favicon.png", 
         width: 1200,
         height: 630,
         alt: "D&D 5e — Gerenciador de Personagem",
