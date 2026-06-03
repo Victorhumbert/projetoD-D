@@ -3,6 +3,7 @@ import "./globals.css";
 import { StoreProvider } from "@/components/StoreProvider";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://projeto-d-d-zeta.vercel.app"),
   title: "D&D 5e — Gerenciador de Personagem",
   description: "Ficha digital de personagem para Dungeons & Dragons 5a Edição.",
   icons: {
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
     siteName: "D&D 5e — Gerenciador de Personagem",
     images: [
       {
-        url: "/favicon.jpg",
+        url: "/favicon.jpg", 
         width: 1200,
         height: 630,
         alt: "D&D 5e — Gerenciador de Personagem",
