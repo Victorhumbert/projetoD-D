@@ -1,5 +1,11 @@
 import type { AtributoNome, DadoDeVida } from '@/types/character';
 
+export interface Subclasse {
+  id: string;
+  nome: string;
+  descricao: string;
+}
+
 export interface CharacterClass {
   id: string;
   nome: string;
@@ -14,6 +20,8 @@ export interface CharacterClass {
   slotsMagia: boolean;
   /** Bruxo: slots do pacto recuperam em descanso curto */
   slotsEspeciais?: boolean;
+  nivel_subclasse: number;
+  subclasses: Subclasse[];
 }
 
 export const CLASSES: CharacterClass[] = [
@@ -39,6 +47,13 @@ export const CLASSES: CharacterClass[] = [
       'Fraco à distância',
     ],
     slotsMagia: false,
+    nivel_subclasse: 3,
+    subclasses: [
+      { id: 'berserker', nome: 'Caminho do Berserker', descricao: 'Frenesi: ataque bônus cada turno durante Fúria. Mente Intemerata: imunidade a charme/medo durante Fúria.' },
+      { id: 'totem', nome: 'Caminho do Guerreiro Totêmico', descricao: 'Espírito totêmico (Urso/Águia/Lobo) concede habilidades passivas únicas. Urso: resistência a quase todo tipo de dano.' },
+      { id: 'ancestral', nome: 'Caminho dos Ancestrais Furiosos', descricao: 'Convocar espíritos ancestrais que protegem aliados e prejudicam inimigos.' },
+      { id: 'tempestade', nome: 'Caminho da Tempestade Herald', descricao: 'Dano de raio/trovão, voar temporariamente em níveis altos.' },
+    ],
   },
   {
     id: 'bardo',
@@ -57,6 +72,14 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['d8 — frágil', 'Menos slots inicialmente', 'Depende de Carisma'],
     slotsMagia: true,
+    nivel_subclasse: 3,
+    subclasses: [
+      { id: 'lore', nome: 'Colégio do Saber', descricao: 'Segredos Mágicos antecipado (nível 6). Palavras Cortantes: usar Inspiração Bárdica contra inimigos.' },
+      { id: 'valor', nome: 'Colégio do Valor', descricao: 'Proficiência em armaduras médias, escudos e armas marciais. Ataque extra no nível 6.' },
+      { id: 'espadas', nome: 'Colégio das Espadas', descricao: 'Floreios de Lâmina: manobras de combate usando Inspiração Bárdica. Armadura de scimitar.' },
+      { id: 'sussurros', nome: 'Colégio dos Sussurros', descricao: 'Palavras Psíquicas: dano psíquico extra. Roubar persona de humanóide morto.' },
+      { id: 'glamour', nome: 'Colégio do Glamour', descricao: 'Inspiração Sedutora: bônus de movimento e ação bônus. Manto de Majestade.' },
+    ],
   },
   {
     id: 'clerigo',
@@ -74,6 +97,17 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['Depende de Sabedoria', 'Papel de curador cria expectativas'],
     slotsMagia: true,
+    nivel_subclasse: 1,
+    subclasses: [
+      { id: 'vida', nome: 'Domínio da Vida', descricao: 'Melhor curador do jogo. Proficiência em armadura pesada. Bênção do Curandeiro.' },
+      { id: 'luz', nome: 'Domínio da Luz', descricao: 'DPS de fogo/radiante. Warding Flare: impor desvantagem em ataque contra você.' },
+      { id: 'guerra', nome: 'Domínio da Guerra', descricao: 'Armadura pesada + armas marciais. Ataque de Guerra: bônus em jogadas de ataque.' },
+      { id: 'tempestade', nome: 'Domínio da Tempestade', descricao: 'Dano de raio/trovão. Ira da Tempestade: dano automático a atacantes.' },
+      { id: 'morte', nome: 'Domínio da Morte', descricao: 'Controle de mortos-vivos. Toque necrótico potenciado. (Geralmente vilões/antiheróis)' },
+      { id: 'natureza', nome: 'Domínio da Natureza', descricao: 'Proficiência em armadura pesada. Afinidade com animais e plantas.' },
+      { id: 'conhecimento', nome: 'Domínio do Conhecimento', descricao: 'Proficiência e expertise em perícias de conhecimento. Visão Abençoada da Mente.' },
+      { id: 'enganacao', nome: 'Domínio do Engano', descricao: 'Duplicata sombria, troca de lugar com cópia ilusória. Bênção do Trapaceiro.' },
+    ],
   },
   {
     id: 'druida',
@@ -92,6 +126,13 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['Sem armadura metálica', 'Complexo de gerenciar', 'Sabedoria é essencial'],
     slotsMagia: true,
+    nivel_subclasse: 2,
+    subclasses: [
+      { id: 'lua', nome: 'Círculo da Lua', descricao: 'Forma Selvagem de combate desde nível 2. CR máximo muito superior ao padrão.' },
+      { id: 'terra', nome: 'Círculo da Terra', descricao: 'Recuperação Natural: recuperar slots. Magias extras por bioma escolhido.' },
+      { id: 'esporos', nome: 'Círculo dos Esporos', descricao: 'Animar mortos com fungos. Halo de Esporos: dano necrótico a adjacentes.' },
+      { id: 'sonhos', nome: 'Círculo dos Sonhos', descricao: 'Balm of the Summer Court: cura em pool. Travessia pelo mundo feérico.' },
+    ],
   },
   {
     id: 'guerreiro',
@@ -109,6 +150,15 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['Sem magia no subtipo base', 'Menos utilidade fora do combate'],
     slotsMagia: false,
+    nivel_subclasse: 3,
+    subclasses: [
+      { id: 'campeao', nome: 'Campeão', descricao: 'Crítico em 19–20. Estilo de combate adicional. Simples, mas consistente.' },
+      { id: 'mestre_batalha', nome: 'Mestre de Batalha', descricao: 'Manobras de combate com Dados de Superioridade. Alta versatilidade tática.' },
+      { id: 'cavaleiro_elfico', nome: 'Cavaleiro Élfico', descricao: 'Acesso a magias do Mago (Encantamento e Evocação). Vínculo com armas e armadura.' },
+      { id: 'arqueiro_arcano', nome: 'Arqueiro Arcano', descricao: 'Flechas mágicas com efeitos especiais. Tiro certeiro para ignorar cobertura.' },
+      { id: 'samurai', nome: 'Samurai', descricao: 'Determinação de Combate: vantagem em todos ataques por 1 turno. Espírito inquebrável.' },
+      { id: 'cavaleiro_runa', nome: 'Cavaleiro de Runas', descricao: 'Runas mágicas em armas/armadura. Crescimento gigante temporário.' },
+    ],
   },
   {
     id: 'monge',
@@ -131,6 +181,14 @@ export const CLASSES: CharacterClass[] = [
       'Dois atributos dependentes',
     ],
     slotsMagia: false,
+    nivel_subclasse: 3,
+    subclasses: [
+      { id: 'mao_aberta', nome: 'Caminho da Mão Aberta', descricao: 'Técnica da Mão Aberta: empurrar, derrubar ou negar reação ao Flurry of Blows.' },
+      { id: 'sombra', nome: 'Caminho da Sombra', descricao: 'Magias de Mago de Ilusão/Conjuração. Teletransporte entre sombras.' },
+      { id: 'quatro_elementos', nome: 'Caminho dos Quatro Elementos', descricao: 'Disciplinas elementais usando Ki: projéteis de fogo, surf em água, etc.' },
+      { id: 'sol', nome: 'Caminho do Sol', descricao: 'Ataques de radiante. Golpe Fulminante: dano de trovão em área.' },
+      { id: 'borracao', nome: 'Caminho da Borracha (Borrão)', descricao: 'Absorver e redirecionar dano. Alta sobrevivência.' },
+    ],
   },
   {
     id: 'paladino',
@@ -152,6 +210,15 @@ export const CLASSES: CharacterClass[] = [
       'Juramento impõe restrições',
     ],
     slotsMagia: true,
+    nivel_subclasse: 3,
+    subclasses: [
+      { id: 'devocao', nome: 'Juramento de Devoção', descricao: 'Arma Sagrada: adicionar Carisma ao ataque. Escudo Sagrado. O paladino clássico.' },
+      { id: 'ancestrais', nome: 'Juramento dos Anciãos', descricao: 'Aura de Proteção contra magia. Resistência a dano de magias.' },
+      { id: 'vinganca', nome: 'Juramento de Vingança', descricao: 'Inimigo Jurado: vantagem vs um alvo. Misty Step e Hold Person. Alto DPS.' },
+      { id: 'conquista', nome: 'Juramento de Conquista', descricao: 'Semear o Terror: medo em área. Aura de Conquista: velocidade 0 em criaturas amedrontadas.' },
+      { id: 'redencao', nome: 'Juramento de Redenção', descricao: 'Foco em resolver conflitos sem violência. Absorver dano de aliados.' },
+      { id: 'quebrado', nome: 'Paladino Caído (Juramento Quebrado)', descricao: 'Perde habilidades do Juramento. Deve se reconciliar ou trocar para Antipaladino.' },
+    ],
   },
   {
     id: 'patrulheiro',
@@ -173,6 +240,13 @@ export const CLASSES: CharacterClass[] = [
       'Depende de Des e Sab',
     ],
     slotsMagia: true,
+    nivel_subclasse: 3,
+    subclasses: [
+      { id: 'cacador', nome: 'Caçador', descricao: 'Presa do Caçador: dano extra no inimigo marcado. Defesas especializadas contra hordas ou grandes criaturas.' },
+      { id: 'mestre_besta', nome: 'Mestre das Bestas', descricao: 'Companheiro animal que age no seu turno. Vínculo profundo com o animal.' },
+      { id: 'deslizador', nome: 'Deslizador Feral', descricao: 'Combate com duas armas potenciado. Ferrão sombrio extra.' },
+      { id: 'horizonte', nome: 'Sentinela do Horizonte', descricao: 'Detectar o invisível. Ataque de oportunidade a 9m de distância.' },
+    ],
   },
   {
     id: 'ladino',
@@ -190,6 +264,14 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['Apenas 1 ataque por turno', 'd8 — frágil', 'Depende de posicionamento'],
     slotsMagia: false,
+    nivel_subclasse: 3,
+    subclasses: [
+      { id: 'trapaceiro', nome: 'Trapaceiro Arcano', descricao: 'Acesso a magias do Mago (Encantamento e Ilusão). Mão Mágica potenciada.' },
+      { id: 'assassino', nome: 'Assassino', descricao: 'Dano massivo na surpresa. Infiltrar identidades falsas. Venenos.' },
+      { id: 'alma_ladrona', nome: 'Alma Ladrona', descricao: 'Subclasse de suporte/controle. Roubar habilidades de inimigos.' },
+      { id: 'inquisidor', nome: 'Inquisidor Místico', descricao: 'Detectar mentiras. Resistência psíquica. Proficiência em Religião e Arcanismo.' },
+      { id: 'fantasma', nome: 'Fantasma', descricao: 'Atravessar objetos, possuir criaturas. Alta mobilidade sobrenatural.' },
+    ],
   },
   {
     id: 'feiticeiro',
@@ -207,6 +289,14 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['Menor lista de magias', 'd6 — extremamente frágil', 'Magias fixas, sem preparar'],
     slotsMagia: true,
+    nivel_subclasse: 1,
+    subclasses: [
+      { id: 'draconico', nome: 'Linhagem Dracônica', descricao: 'PV extra por nível. CA natural (13 + Des). Asas dracônicas no nível 14.' },
+      { id: 'magia_selvagem', nome: 'Magia Selvagem', descricao: 'Surto de Magia Selvagem: efeitos aleatórios ao lançar. Dobrar dado de Sorte de Tasha.' },
+      { id: 'divino', nome: 'Alma Divina', descricao: 'Acesso à lista de magias do Clérigo. Restauração Divina: recuperar PV.' },
+      { id: 'sombra', nome: 'Magia das Sombras', descricao: 'Olhos da Escuridão: visão no escuro mágica. Força das Trevas.' },
+      { id: 'tempestade', nome: 'Magia da Tempestade', descricao: 'Wind Speaker: linguagem Primordial. Tempestade de Fúria: resistência a raio/trovão.' },
+    ],
   },
   {
     id: 'bruxo',
@@ -226,6 +316,14 @@ export const CLASSES: CharacterClass[] = [
     contras: ['1–4 slots apenas', 'Lista de magias pequena', 'Fraco sem descansos curtos frequentes'],
     slotsMagia: true,
     slotsEspeciais: true,
+    nivel_subclasse: 1,
+    subclasses: [
+      { id: 'archfey', nome: 'O Arquifeérico', descricao: 'Presença Fae: encantar ou assustar em área. Escape Brumoso: Misty Step como reação.' },
+      { id: 'fiend', nome: 'O Demônio', descricao: 'Bênção do Mundo das Trevas: PV temporários ao matar. Lista de magias de fogo poderosa.' },
+      { id: 'great_old_one', nome: 'O Grande Ancião', descricao: 'Despertar Mental: telepatia. Conhecimento proibido de entidades além da compreensão.' },
+      { id: 'celestial', nome: 'O Celestial', descricao: 'Cura com slots de Bruxo. Lista de magias sagradas. Chama Curativa.' },
+      { id: 'genie', nome: 'O Gênio', descricao: 'Vaso do Gênio: espaço extradimensional de descanso. Bônus por tipo de gênio.' },
+    ],
   },
   {
     id: 'mago',
@@ -243,6 +341,17 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['d6 — o mais frágil', 'Sem armadura', 'Totalmente dependente de Inteligência'],
     slotsMagia: true,
+    nivel_subclasse: 2,
+    subclasses: [
+      { id: 'abjuracao', nome: 'Escola de Abjuração', descricao: 'Arcane Ward: escudo de PV absorvedores recarregado ao lançar magias de abjuração.' },
+      { id: 'conjuracao', nome: 'Escola de Conjuração', descricao: 'Teleporte menor desde nível 2. Conjurar criaturas mais fortes.' },
+      { id: 'adivinhacao', nome: 'Escola de Adivinhação', descricao: 'Presságios: 2x por dia, substituir qualquer d20 por resultado pré-rolado.' },
+      { id: 'encantamento', nome: 'Escola de Encantamento', descricao: 'Hipnótico: encantar múltiplos humanóides. Roubar controle de criaturas encantadas.' },
+      { id: 'evocacao', nome: 'Escola de Evocação', descricao: 'Esculpir Magias: excluir aliados da área de efeito. Potencializar Magias: rerrolar dano.' },
+      { id: 'ilusao', nome: 'Escola de Ilusão', descricao: 'Ilusão Maleável: mover ilusões instantaneamente. Ilusão Iluminada: real ao toque.' },
+      { id: 'necromancia', nome: 'Escola de Necromancia', descricao: 'Comandar horda de mortos-vivos. Ceifar Vida: curar ao matar com magia.' },
+      { id: 'transmutacao', nome: 'Escola de Transmutação', descricao: 'Alquimista: transformar materiais. Pedra do Transmutador: bônus adaptáveis.' },
+    ],
   },
 ];
 

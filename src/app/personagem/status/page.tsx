@@ -98,22 +98,39 @@ export default function StatusPage() {
             <div className="flex items-center gap-x-2 gap-y-0.5 text-sm text-text-secondary flex-wrap">
               <span>Nível</span>
               <input
-                type="number"
+                type="text"
                 inputMode="numeric"
+                pattern="[0-9]*"
                 value={identificacao.nivel}
-                min={1}
-                max={20}
                 aria-label="Nível"
                 onChange={(e) => {
-                  const nivel = parseInt(e.target.value, 10);
-                  if (!isNaN(nivel) && nivel >= 1 && nivel <= 20)
-                    setIdentificacao({ nivel });
+                  const raw = e.target.value.replace(/[^0-9]/g, '');
+                  const nivel = raw === '' ? 1 : Math.min(20, Math.max(1, parseInt(raw, 10)));
+                  setIdentificacao({ nivel });
                 }}
+                onFocus={(e) => e.target.select()}
                 className="bg-transparent border-b border-transparent hover:border-border-subtle focus:border-accent focus:outline-none w-10 text-lg text-center min-h-11"
               />
             </div>
 
-            <div className="mt-1">
+            <div className="mt-1 flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <label htmlFor="xp-input" className="text-xs text-text-muted">XP</label>
+                <input
+                  id="xp-input"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={identificacao.xp}
+                  aria-label="Pontos de experiência"
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/[^0-9]/g, '');
+                    setIdentificacao({ xp: raw === '' ? 0 : parseInt(raw, 10) });
+                  }}
+                  onFocus={(e) => e.target.select()}
+                  className="w-24 bg-transparent border-b border-transparent hover:border-border-subtle focus:border-accent focus:outline-none text-xs text-center min-h-8"
+                />
+              </div>
               <XpProgressBar xp={identificacao.xp} nivel={identificacao.nivel} />
             </div>
           </div>
@@ -195,17 +212,17 @@ export default function StatusPage() {
             <div className="flex flex-col items-center gap-1">
               <span className="text-xs text-text-secondary uppercase">CA</span>
               <input
-                type="number"
+                type="text"
                 inputMode="numeric"
+                pattern="[0-9]*"
                 value={combate.classeArmadura}
-                min={0}
-                max={30}
                 aria-label="Classe de armadura"
                 onChange={(e) => {
-                  const v = parseInt(e.target.value, 10);
-                  if (!isNaN(v)) setCombate({ classeArmadura: v });
+                  const raw = e.target.value.replace(/[^0-9]/g, '');
+                  setCombate({ classeArmadura: raw === '' ? 0 : parseInt(raw, 10) });
                 }}
-                className="w-16 text-center text-2xl font-bold bg-transparent border-b border-border-default focus:border-accent focus:outline-none text-text-primary"
+                onFocus={(e) => e.target.select()}
+                className="w-16 text-center text-2xl font-bold bg-transparent border-b border-border-default focus:border-accent focus:outline-none text-text-primary min-h-11"
               />
             </div>
           </Card>
@@ -227,17 +244,17 @@ export default function StatusPage() {
               <span className="text-xs text-text-secondary uppercase">Deslocamento</span>
               <div className="flex items-baseline gap-1">
                 <input
-                  type="number"
+                  type="text"
                   inputMode="numeric"
+                  pattern="[0-9]*"
                   value={combate.deslocamento}
-                  min={0}
-                  max={20}
                   aria-label="Deslocamento em quadrados"
                   onChange={(e) => {
-                    const v = parseInt(e.target.value, 10);
-                    if (!isNaN(v)) setCombate({ deslocamento: v });
+                    const raw = e.target.value.replace(/[^0-9]/g, '');
+                    setCombate({ deslocamento: raw === '' ? 0 : parseInt(raw, 10) });
                   }}
-                  className="w-12 text-center text-2xl font-bold bg-transparent border-b border-border-default focus:border-accent focus:outline-none text-text-primary"
+                  onFocus={(e) => e.target.select()}
+                  className="w-12 text-center text-2xl font-bold bg-transparent border-b border-border-default focus:border-accent focus:outline-none text-text-primary min-h-11"
                 />
                 <span className="text-xs text-text-muted">quad</span>
               </div>
@@ -250,18 +267,17 @@ export default function StatusPage() {
               <span className="text-xs text-text-secondary uppercase">Dados de Vida</span>
               <div className="flex items-baseline gap-1">
                 <input
-                  type="number"
+                  type="text"
                   inputMode="numeric"
+                  pattern="[0-9]*"
                   value={combate.dadosDeVidaDisponiveis}
-                  min={0}
-                  max={20}
                   aria-label="Dados de vida disponíveis"
                   onChange={(e) => {
-                    const v = parseInt(e.target.value, 10);
-                    if (!isNaN(v))
-                      setCombate({ dadosDeVidaDisponiveis: v });
+                    const raw = e.target.value.replace(/[^0-9]/g, '');
+                    setCombate({ dadosDeVidaDisponiveis: raw === '' ? 0 : parseInt(raw, 10) });
                   }}
-                  className="w-10 text-center text-2xl font-bold bg-transparent border-b border-border-default focus:border-accent focus:outline-none text-text-primary"
+                  onFocus={(e) => e.target.select()}
+                  className="w-10 text-center text-2xl font-bold bg-transparent border-b border-border-default focus:border-accent focus:outline-none text-text-primary min-h-11"
                 />
                 <span className="text-sm font-semibold text-accent">
                   {combate.dadoDeVida}

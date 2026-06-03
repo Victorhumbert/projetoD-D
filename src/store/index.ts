@@ -34,6 +34,10 @@ import {
   createInventarioSlice,
   type InventarioSlice,
 } from './slices/inventarioSlice';
+import {
+  createCarteiraSlice,
+  type CarteiraSlice,
+} from './slices/carteiraSlice';
 
 // Metadados extras no store (id, versão, etc.)
 interface MetaSlice {
@@ -53,6 +57,7 @@ export type CharacterStore = IdentificacaoSlice &
   MagiasSlice &
   HabilidadesSlice &
   InventarioSlice &
+  CarteiraSlice &
   MetaSlice;
 
 export const useCharacterStore = create<CharacterStore>()(
@@ -64,6 +69,7 @@ export const useCharacterStore = create<CharacterStore>()(
     ...createMagiasSlice(set, get, api),
     ...createHabilidadesSlice(set, get, api),
     ...createInventarioSlice(set, get, api),
+    ...createCarteiraSlice(set, get, api),
 
     // --- Meta ---
     characterId: defaultCharacter.id,
@@ -84,6 +90,7 @@ export const useCharacterStore = create<CharacterStore>()(
         magias: char.magias,
         habilidades: char.habilidades,
         inventario: char.inventario,
+        carteira: char.carteira ?? { cobre: 0, prata: 0, electrum: 0, ouro: 0, platina: 0 },
       });
     },
 
@@ -101,6 +108,7 @@ export const useCharacterStore = create<CharacterStore>()(
         magias: s.magias,
         habilidades: s.habilidades,
         inventario: s.inventario,
+        carteira: s.carteira,
         atualizadoEm: new Date().toISOString(),
       };
     },

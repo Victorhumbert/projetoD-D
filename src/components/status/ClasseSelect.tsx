@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 const SELECT_CLASS = cn(
   'w-full bg-bg-base border border-border-subtle rounded-lg px-3 py-2.5',
   'text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent',
-  'min-h-[44px]'
+  'min-h-11'
 );
 
 function ClasseDetalhe({ classe }: { classe: CharacterClass }) {
@@ -60,12 +60,10 @@ function ClasseDetalhe({ classe }: { classe: CharacterClass }) {
   );
 }
 
-/**
- * Select de classe com painel de detalhes e auto-configuração do dado de vida
- * e testes de resistência ao selecionar.
- */
 export function ClasseSelect() {
   const classe = useCharacterStore((s) => s.identificacao.classe);
+  const subclasse = useCharacterStore((s) => s.identificacao.subclasse);
+  const nivel = useCharacterStore((s) => s.identificacao.nivel);
   const setIdentificacao = useCharacterStore((s) => s.setIdentificacao);
   const setCombate = useCharacterStore((s) => s.setCombate);
   const setTestesResistenciaDaClasse = useCharacterStore(
@@ -73,10 +71,12 @@ export function ClasseSelect() {
   );
 
   const classeAtual = CLASSES.find((c) => c.nome === classe) ?? null;
+  const subclasseAtual = classeAtual?.subclasses.find((s) => s.id === subclasse) ?? null;
+  const subclasseDisponivel = classeAtual !== null && nivel >= classeAtual.nivel_subclasse;
 
   function handleClasseChange(novaClasNome: string) {
     const novaClasse = CLASSES.find((c) => c.nome === novaClasNome);
-    setIdentificacao({ classe: novaClasNome });
+    setIdentificacao({ classe: novaClasNome, subclasse: undefined });
     if (novaClasse) {
       setCombate({ dadoDeVida: novaClasse.dadoVida });
       setTestesResistenciaDaClasse(novaClasse.testesResistencia);
@@ -103,6 +103,41 @@ export function ClasseSelect() {
           ))}
         </select>
       </div>
+
+      {/* Subclasse */}
+      {classeAtual && (
+        <div className="flex flex-col gap-1">
+          <label htmlFor="select-subclasse" className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
+            Subclasse
+          </label>
+          {subclasseDisponivel ? (
+            <>
+              <select
+                id="select-subclasse"
+                value={subclasse ?? ''}
+                onChange={(e) => setIdentificacao({ subclasse: e.target.value || undefined })}
+                className={SELECT_CLASS}
+              >
+                <option value="">Selecionar subclasse...</option>
+                {classeAtual.subclasses.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.nome}
+                  </option>
+                ))}
+              </select>
+              {subclasseAtual && (
+                <p className="text-xs text-text-secondary italic px-1 leading-relaxed">
+                  {subclasseAtual.descricao}
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-xs text-text-muted italic px-1">
+              Disponível no nível {classeAtual.nivel_subclasse}
+            </p>
+          )}
+        </div>
+      )}
 
       {classeAtual && <ClasseDetalhe classe={classeAtual} />}
     </div>

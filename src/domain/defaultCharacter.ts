@@ -13,6 +13,7 @@ export const defaultCharacter: Character = {
     raca: 'Elfo',
     subRaca: 'Elfo da Floresta',
     classe: 'Guerreiro',
+    subclasse: 'campeao',
     nivel: 3,
     antecedente: 'Soldado',
     xp: 900,
@@ -125,6 +126,13 @@ export const defaultCharacter: Character = {
       recuperaEm: 'nunca',
     },
   ],
+  carteira: {
+    cobre: 0,
+    prata: 0,
+    electrum: 0,
+    ouro: 15,
+    platina: 0,
+  },
   inventario: [
     {
       id: 'i1',

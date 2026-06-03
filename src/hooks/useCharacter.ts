@@ -22,6 +22,7 @@ export function useCharacter(): Character {
   const magias = useCharacterStore((s) => s.magias);
   const habilidades = useCharacterStore((s) => s.habilidades);
   const inventario = useCharacterStore((s) => s.inventario);
+  const carteira = useCharacterStore((s) => s.carteira);
   const atualizadoEm = useCharacterStore((s) => s.atualizadoEm);
 
   return {
@@ -36,6 +37,7 @@ export function useCharacter(): Character {
     magias,
     habilidades,
     inventario,
+    carteira,
     atualizadoEm,
   };
 }

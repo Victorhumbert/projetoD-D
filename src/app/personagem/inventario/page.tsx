@@ -5,6 +5,7 @@ import { useCharacterStore } from '@/store';
 import { useHydration } from '@/hooks/useHydration';
 import { ItemCard } from '@/components/inventario/ItemCard';
 import { ItemForm } from '@/components/inventario/ItemForm';
+import { Carteira } from '@/components/inventario/Carteira';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import type { ItemInventario } from '@/types/character';
@@ -55,6 +56,9 @@ export default function InventarioPage() {
 
   return (
     <div className="flex flex-col gap-5">
+      {/* Carteira */}
+      <Carteira />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

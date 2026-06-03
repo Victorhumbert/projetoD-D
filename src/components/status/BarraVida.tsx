@@ -62,18 +62,19 @@ export function BarraVida() {
             PV Máx
           </label>
           <input
-            type="number"
+            type="text"
             inputMode="numeric"
+            pattern="[0-9]*"
             value={pvMax}
-            min={1}
-            max={999}
             aria-label="Pontos de vida máximos"
             onChange={(e) => {
-              const v = parseInt(e.target.value, 10);
-              if (!isNaN(v) && v > 0) setCombate({ pontosVidaMax: v });
+              const raw = e.target.value.replace(/[^0-9]/g, '');
+              const v = raw === '' ? 1 : Math.max(1, parseInt(raw, 10));
+              setCombate({ pontosVidaMax: v });
             }}
+            onFocus={(e) => e.target.select()}
             className={cn(
-              'rounded border bg-bg-raised px-2 py-1 text-sm text-text-primary',
+              'rounded border bg-bg-raised px-2 py-1 text-sm text-text-primary min-h-11',
               'focus:border-accent focus:outline-none border-border-default'
             )}
           />
@@ -91,19 +92,19 @@ export function BarraVida() {
               className="w-9 h-9 rounded-lg bg-bg-raised border border-border-subtle text-text-primary hover:bg-danger/20 hover:border-danger flex items-center justify-center text-lg font-bold active:scale-95 transition-all shrink-0"
             >−</button>
             <input
-              type="number"
+              type="text"
               inputMode="numeric"
+              pattern="[0-9]*"
               value={pvAtual}
-              min={0}
-              max={pvMax}
               aria-label="Pontos de vida atuais"
               onChange={(e) => {
-                const v = parseInt(e.target.value, 10);
-                if (!isNaN(v)) setPvAtual(v);
+                const raw = e.target.value.replace(/[^0-9]/g, '');
+                setPvAtual(raw === '' ? 0 : parseInt(raw, 10));
               }}
+              onFocus={(e) => e.target.select()}
               className={cn(
                 'w-full rounded border-2 bg-bg-raised px-2 py-1 text-base text-text-primary font-semibold text-center',
-                'focus:outline-none transition-colors min-h-9',
+                'focus:outline-none transition-colors min-h-11',
                 borderColor
               )}
             />
@@ -121,18 +122,18 @@ export function BarraVida() {
             PV Temp
           </label>
           <input
-            type="number"
+            type="text"
             inputMode="numeric"
+            pattern="[0-9]*"
             value={pvTemp}
-            min={0}
-            max={999}
             aria-label="Pontos de vida temporários"
             onChange={(e) => {
-              const v = parseInt(e.target.value, 10);
-              if (!isNaN(v)) setPvTemp(v);
+              const raw = e.target.value.replace(/[^0-9]/g, '');
+              setPvTemp(raw === '' ? 0 : parseInt(raw, 10));
             }}
+            onFocus={(e) => e.target.select()}
             className={cn(
-              'rounded border bg-bg-raised px-2 py-1 text-sm text-text-primary',
+              'rounded border bg-bg-raised px-2 py-1 text-sm text-text-primary min-h-11',
               'focus:border-info focus:outline-none border-border-default'
             )}
           />

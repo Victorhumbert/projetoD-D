@@ -38,16 +38,17 @@ export function AtributoCard({ nome }: AtributoCardProps) {
         {modFormatado}
       </span>
       <input
-        type="number"
+        type="text"
         inputMode="numeric"
+        pattern="[0-9]*"
         value={valor}
-        min={1}
-        max={30}
         aria-label={`${config.label}: valor`}
         onChange={(e) => {
-          const v = parseInt(e.target.value, 10);
-          if (!isNaN(v)) setAtributo(nome, v);
+          const raw = e.target.value.replace(/[^0-9]/g, '');
+          const v = raw === '' ? 1 : Math.min(30, Math.max(1, parseInt(raw, 10)));
+          setAtributo(nome, v);
         }}
+        onFocus={(e) => e.target.select()}
         className={cn(
           'w-12 text-center rounded border border-border-default bg-bg-surface',
           'py-1.5 text-base text-text-primary focus:border-accent focus:outline-none min-h-11'

@@ -39,6 +39,7 @@ export interface Identificacao {
   raca: string;
   subRaca?: string;
   classe: string;
+  subclasse?: string;
   nivel: number;
   antecedente: string;
   xp: number;
@@ -118,6 +119,14 @@ export interface ItemInventario {
   descricao?: string;
 }
 
+export interface Carteira {
+  cobre: number;
+  prata: number;
+  electrum: number;
+  ouro: number;
+  platina: number;
+}
+
 export interface Character {
   id: string;
   versaoSchema: number;
@@ -130,5 +139,6 @@ export interface Character {
   magias: Magias;
   habilidades: Habilidade[];
   inventario: ItemInventario[];
+  carteira: Carteira;
   atualizadoEm: string;
 }
