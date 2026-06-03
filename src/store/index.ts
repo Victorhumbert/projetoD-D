@@ -44,6 +44,10 @@ import {
   createCarteiraSlice,
   type CarteiraSlice,
 } from './slices/carteiraSlice';
+import {
+  createMissoesSlice,
+  type MissoesSlice,
+} from './slices/missoesSlice';
 
 // Metadados extras no store (id, versão, etc.)
 interface MetaSlice {
@@ -64,6 +68,7 @@ export type CharacterStore = IdentificacaoSlice &
   HabilidadesSlice &
   InventarioSlice &
   CarteiraSlice &
+  MissoesSlice &
   MetaSlice;
 
 export const useCharacterStore = create<CharacterStore>()(
@@ -76,6 +81,7 @@ export const useCharacterStore = create<CharacterStore>()(
     ...createHabilidadesSlice(set, get, api),
     ...createInventarioSlice(set, get, api),
     ...createCarteiraSlice(set, get, api),
+    ...createMissoesSlice(set, get, api),
 
     // --- Meta ---
     characterId: defaultCharacter.id,
@@ -97,6 +103,7 @@ export const useCharacterStore = create<CharacterStore>()(
         habilidades: char.habilidades,
         inventario: char.inventario,
         carteira: char.carteira ?? { cobre: 0, prata: 0, electrum: 0, ouro: 0, platina: 0 },
+        missoes: char.missoes ?? { locais: [], quests: [] },
       });
     },
 
@@ -115,6 +122,7 @@ export const useCharacterStore = create<CharacterStore>()(
         habilidades: s.habilidades,
         inventario: s.inventario,
         carteira: s.carteira,
+        missoes: s.missoes,
         atualizadoEm: new Date().toISOString(),
       };
     },

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Toggle } from '@/components/ui/Toggle';
 import { generateId } from '@/lib/utils';
+import { CATEGORIAS_ITEM, CATEGORIA_PADRAO } from '@/data/itemCategories';
 
 interface ItemFormProps {
   initial?: ItemInventario;
@@ -13,15 +14,13 @@ interface ItemFormProps {
   onCancel: () => void;
 }
 
-/**
- * Formulário para adicionar ou editar um item do inventário.
- */
 export function ItemForm({ initial, onSave, onCancel }: ItemFormProps) {
   const [nome, setNome] = useState(initial?.nome ?? '');
   const [quantidade, setQuantidade] = useState(String(initial?.quantidade ?? '1'));
   const [pesoKg, setPesoKg] = useState(String(initial?.pesoKg ?? '0'));
   const [equipado, setEquipado] = useState(initial?.equipado ?? false);
   const [descricao, setDescricao] = useState(initial?.descricao ?? '');
+  const [categoria, setCategoria] = useState(initial?.categoria ?? CATEGORIA_PADRAO);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validate = (): boolean => {
@@ -45,6 +44,7 @@ export function ItemForm({ initial, onSave, onCancel }: ItemFormProps) {
       pesoKg: parseFloat(pesoKg),
       equipado,
       descricao: descricao.trim() || undefined,
+      categoria,
     });
   };
 
@@ -59,6 +59,27 @@ export function ItemForm({ initial, onSave, onCancel }: ItemFormProps) {
           placeholder="Ex: Espada Longa"
           autoFocus
         />
+
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="categoria-item"
+            className="text-xs font-medium text-text-secondary uppercase tracking-wide"
+          >
+            Categoria
+          </label>
+          <select
+            id="categoria-item"
+            value={categoria}
+            onChange={(e) => setCategoria(e.target.value)}
+            className="rounded-md border border-border-default bg-bg-raised px-3 py-2 text-sm text-text-primary focus:border-accent focus:outline-none"
+          >
+            {CATEGORIAS_ITEM.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.icone} {c.nome}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <Input

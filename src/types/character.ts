@@ -117,6 +117,26 @@ export interface ItemInventario {
   pesoKg: number;
   equipado: boolean;
   descricao?: string;
+  categoria?: string;
+}
+
+export type QuestTipo = 'principal' | 'sidequest';
+export type QuestStatus = 'ativa' | 'concluida' | 'falhou';
+
+export interface Quest {
+  id: string;
+  titulo: string;
+  descricao?: string;
+  tipo: QuestTipo;
+  status: QuestStatus;
+  local?: string;
+  recompensa?: string;
+  recompensa_indefinida: boolean;
+}
+
+export interface Missoes {
+  locais: string[];
+  quests: Quest[];
 }
 
 export interface Carteira {
@@ -140,5 +160,6 @@ export interface Character {
   habilidades: Habilidade[];
   inventario: ItemInventario[];
   carteira: Carteira;
+  missoes: Missoes;
   atualizadoEm: string;
 }

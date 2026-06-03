@@ -133,6 +133,10 @@ export const defaultCharacter: Character = {
     ouro: 15,
     platina: 0,
   },
+  missoes: {
+    locais: [],
+    quests: [],
+  },
   inventario: [
     {
       id: 'i1',

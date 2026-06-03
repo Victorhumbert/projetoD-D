@@ -15,12 +15,10 @@ const RECUPERA_LABEL: Record<string, string> = {
 
 interface HabilidadeCardProps {
   habilidade: Habilidade;
+  onEdit?: (habilidade: Habilidade) => void;
 }
 
-/**
- * Card de habilidade de classe com tracker de usos e botão de reset.
- */
-export function HabilidadeCard({ habilidade: h }: HabilidadeCardProps) {
+export function HabilidadeCard({ habilidade: h, onEdit }: HabilidadeCardProps) {
   const usarHabilidade = useCharacterStore((s) => s.usarHabilidade);
   const recuperarHabilidade = useCharacterStore((s) => s.recuperarHabilidade);
   const resetHabilidade = useCharacterStore((s) => s.resetHabilidade);
@@ -67,7 +65,7 @@ export function HabilidadeCard({ habilidade: h }: HabilidadeCardProps) {
         </div>
 
         {/* Ações */}
-        <div className="flex gap-1 flex-shrink-0">
+        <div className="flex gap-1 shrink-0">
           {temUsos && (
             <button
               type="button"
@@ -78,27 +76,31 @@ export function HabilidadeCard({ habilidade: h }: HabilidadeCardProps) {
               Reset
             </button>
           )}
+          {onEdit && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(h)}
+              aria-label={`Editar ${h.nome}`}
+              className="px-2 py-1"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => {
-              if (
-                window.confirm(`Remover habilidade "${h.nome}"?`)
-              )
+              if (window.confirm(`Remover habilidade "${h.nome}"?`))
                 removeHabilidade(h.id);
             }}
             aria-label={`Remover ${h.nome}`}
             className="px-2 py-1 text-danger hover:text-danger"
           >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden="true"
-            >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <polyline points="3 6 5 6 21 6" />
               <path d="M19 6l-1 14H6L5 6" />
               <path d="M10 11v6M14 11v6" />

@@ -23,6 +23,7 @@ export function useCharacter(): Character {
   const habilidades = useCharacterStore((s) => s.habilidades);
   const inventario = useCharacterStore((s) => s.inventario);
   const carteira = useCharacterStore((s) => s.carteira);
+  const missoes = useCharacterStore((s) => s.missoes);
   const atualizadoEm = useCharacterStore((s) => s.atualizadoEm);
 
   return {
@@ -38,6 +39,7 @@ export function useCharacter(): Character {
     habilidades,
     inventario,
     carteira,
+    missoes,
     atualizadoEm,
   };
 }

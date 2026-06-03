@@ -25,38 +25,66 @@ export default function MagiasPage() {
   const hydrated = useHydration();
 
   const [modalMagia, setModalMagia] = useState(false);
+  const [editingMagia, setEditingMagia] = useState<MagiaConhecida | null>(null);
   const [modalHabilidade, setModalHabilidade] = useState(false);
-  const [spellsColapsed, setSpellsColapsed] = useState<
-    Record<string, boolean>
-  >({});
+  const [editingHabilidade, setEditingHabilidade] = useState<Habilidade | null>(null);
+  const [spellsColapsed, setSpellsColapsed] = useState<Record<string, boolean>>({});
 
   const character = useCharacter();
 
-  const atributoConjuracao = useCharacterStore(
-    (s) => s.magias.atributoConjuracao
-  );
-  const magiasConhecidas = useCharacterStore(
-    (s) => s.magias.magiasConhecidas
-  );
+  const atributoConjuracao = useCharacterStore((s) => s.magias.atributoConjuracao);
+  const magiasConhecidas = useCharacterStore((s) => s.magias.magiasConhecidas);
   const habilidades = useCharacterStore((s) => s.habilidades);
   const addMagia = useCharacterStore((s) => s.addMagia);
+  const updateMagia = useCharacterStore((s) => s.updateMagia);
   const addHabilidade = useCharacterStore((s) => s.addHabilidade);
+  const updateHabilidade = useCharacterStore((s) => s.updateHabilidade);
 
   const cdMagia = calcCdMagia(character);
   const bonusAtaque = calcBonusAtaqueMagia(character);
 
-  // Agrupa magias por nível
   const truques = magiasConhecidas.filter((m) => m.nivel === 0);
-  const porNivel = [1, 2, 3, 4, 5, 6, 7, 8, 9].reduce<
-    Record<number, MagiaConhecida[]>
-  >((acc, n) => {
-    const grupo = magiasConhecidas.filter((m) => m.nivel === n);
-    if (grupo.length > 0) acc[n] = grupo;
-    return acc;
-  }, {});
+  const porNivel = [1, 2, 3, 4, 5, 6, 7, 8, 9].reduce<Record<number, MagiaConhecida[]>>(
+    (acc, n) => {
+      const grupo = magiasConhecidas.filter((m) => m.nivel === n);
+      if (grupo.length > 0) acc[n] = grupo;
+      return acc;
+    },
+    {}
+  );
 
   const toggleNivel = (nivel: string) => {
     setSpellsColapsed((prev) => ({ ...prev, [nivel]: !prev[nivel] }));
+  };
+
+  const handleEditMagia = (m: MagiaConhecida) => {
+    setEditingMagia(m);
+    setModalMagia(true);
+  };
+
+  const handleSaveMagia = (m: MagiaConhecida) => {
+    if (editingMagia) {
+      updateMagia(m.id, m);
+    } else {
+      addMagia(m);
+    }
+    setModalMagia(false);
+    setEditingMagia(null);
+  };
+
+  const handleEditHabilidade = (h: Habilidade) => {
+    setEditingHabilidade(h);
+    setModalHabilidade(true);
+  };
+
+  const handleSaveHabilidade = (h: Habilidade) => {
+    if (editingHabilidade) {
+      updateHabilidade(h.id, h);
+    } else {
+      addHabilidade(h);
+    }
+    setModalHabilidade(false);
+    setEditingHabilidade(null);
   };
 
   if (!hydrated) {
@@ -130,7 +158,7 @@ export default function MagiasPage() {
           <Button
             variant="primary"
             size="sm"
-            onClick={() => setModalMagia(true)}
+            onClick={() => { setEditingMagia(null); setModalMagia(true); }}
           >
             + Adicionar
           </Button>
@@ -139,20 +167,12 @@ export default function MagiasPage() {
         {magiasConhecidas.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-10 text-center">
             <svg
-              width="36"
-              height="36"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="text-text-muted"
-              aria-hidden="true"
+              width="36" height="36" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="1.5" className="text-text-muted" aria-hidden="true"
             >
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
             </svg>
-            <p className="text-text-secondary text-sm">
-              Nenhuma magia adicionada
-            </p>
+            <p className="text-text-secondary text-sm">Nenhuma magia adicionada</p>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
@@ -164,7 +184,7 @@ export default function MagiasPage() {
                 </h3>
                 <div className="flex flex-col gap-1.5">
                   {truques.map((m) => (
-                    <SpellCard key={m.id} magia={m} />
+                    <SpellCard key={m.id} magia={m} onEdit={handleEditMagia} />
                   ))}
                 </div>
               </div>
@@ -183,11 +203,7 @@ export default function MagiasPage() {
                   >
                     <svg
                       className={`h-3 w-3 transition-transform duration-200 ${collapsed ? '-rotate-90' : ''}`}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      aria-hidden="true"
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"
                     >
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
@@ -196,7 +212,7 @@ export default function MagiasPage() {
                   {!collapsed && (
                     <div className="flex flex-col gap-1.5">
                       {magias.map((m) => (
-                        <SpellCard key={m.id} magia={m} />
+                        <SpellCard key={m.id} magia={m} onEdit={handleEditMagia} />
                       ))}
                     </div>
                   )}
@@ -219,7 +235,7 @@ export default function MagiasPage() {
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => setModalHabilidade(true)}
+            onClick={() => { setEditingHabilidade(null); setModalHabilidade(true); }}
           >
             + Adicionar
           </Button>
@@ -232,7 +248,7 @@ export default function MagiasPage() {
         ) : (
           <div className="flex flex-col gap-2">
             {habilidades.map((h) => (
-              <HabilidadeCard key={h.id} habilidade={h} />
+              <HabilidadeCard key={h.id} habilidade={h} onEdit={handleEditHabilidade} />
             ))}
           </div>
         )}
@@ -241,29 +257,25 @@ export default function MagiasPage() {
       {/* Modais */}
       <Modal
         open={modalMagia}
-        onClose={() => setModalMagia(false)}
-        title="Adicionar Magia"
+        onClose={() => { setModalMagia(false); setEditingMagia(null); }}
+        title={editingMagia ? 'Editar Magia' : 'Adicionar Magia'}
       >
         <AddMagiaForm
-          onSave={(m: MagiaConhecida) => {
-            addMagia(m);
-            setModalMagia(false);
-          }}
-          onCancel={() => setModalMagia(false)}
+          initial={editingMagia ?? undefined}
+          onSave={handleSaveMagia}
+          onCancel={() => { setModalMagia(false); setEditingMagia(null); }}
         />
       </Modal>
 
       <Modal
         open={modalHabilidade}
-        onClose={() => setModalHabilidade(false)}
-        title="Adicionar Habilidade"
+        onClose={() => { setModalHabilidade(false); setEditingHabilidade(null); }}
+        title={editingHabilidade ? 'Editar Habilidade' : 'Adicionar Habilidade'}
       >
         <AddHabilidadeForm
-          onSave={(h: Habilidade) => {
-            addHabilidade(h);
-            setModalHabilidade(false);
-          }}
-          onCancel={() => setModalHabilidade(false)}
+          initial={editingHabilidade ?? undefined}
+          onSave={handleSaveHabilidade}
+          onCancel={() => { setModalHabilidade(false); setEditingHabilidade(null); }}
         />
       </Modal>
     </div>

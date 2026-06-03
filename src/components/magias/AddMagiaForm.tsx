@@ -7,17 +7,15 @@ import { Button } from '@/components/ui/Button';
 import { generateId } from '@/lib/utils';
 
 interface AddMagiaFormProps {
+  initial?: MagiaConhecida;
   onSave: (magia: MagiaConhecida) => void;
   onCancel: () => void;
 }
 
-/**
- * Formulário para adicionar uma nova magia/truque.
- */
-export function AddMagiaForm({ onSave, onCancel }: AddMagiaFormProps) {
-  const [nome, setNome] = useState('');
-  const [nivel, setNivel] = useState<string>('0');
-  const [descricao, setDescricao] = useState('');
+export function AddMagiaForm({ initial, onSave, onCancel }: AddMagiaFormProps) {
+  const [nome, setNome] = useState(initial?.nome ?? '');
+  const [nivel, setNivel] = useState<string>(String(initial?.nivel ?? '0'));
+  const [descricao, setDescricao] = useState(initial?.descricao ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -28,13 +26,13 @@ export function AddMagiaForm({ onSave, onCancel }: AddMagiaFormProps) {
     if (Object.keys(errs).length > 0) return;
 
     const nivelNum = parseInt(nivel, 10);
+    const nivelFinal = (isNaN(nivelNum) ? 0 : Math.max(0, Math.min(9, nivelNum))) as 0 | NivelMagia;
+
     onSave({
-      id: generateId(),
+      id: initial?.id ?? generateId(),
       nome: nome.trim(),
-      nivel: (isNaN(nivelNum) ? 0 : Math.max(0, Math.min(9, nivelNum))) as
-        | 0
-        | NivelMagia,
-      preparada: nivelNum === 0,
+      nivel: nivelFinal,
+      preparada: initial?.preparada ?? (nivelNum === 0),
       descricao: descricao.trim() || undefined,
     });
   };
@@ -90,7 +88,7 @@ export function AddMagiaForm({ onSave, onCancel }: AddMagiaFormProps) {
           Cancelar
         </Button>
         <Button type="submit" variant="primary">
-          Adicionar
+          {initial ? 'Salvar' : 'Adicionar'}
         </Button>
       </div>
     </form>

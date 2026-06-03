@@ -15,6 +15,7 @@ export interface MagiasSlice {
   usarSlotPacto: () => void;
   recuperarSlotsPacto: () => void;
   addMagia: (magia: MagiaConhecida) => void;
+  updateMagia: (id: string, partial: Partial<MagiaConhecida>) => void;
   removeMagia: (id: string) => void;
   toggleMagiaPreparada: (id: string) => void;
 }
@@ -121,6 +122,16 @@ export const createMagiasSlice: StateCreator<
       magias: {
         ...state.magias,
         magiasConhecidas: [...state.magias.magiasConhecidas, magia],
+      },
+    })),
+
+  updateMagia: (id, partial) =>
+    set((state) => ({
+      magias: {
+        ...state.magias,
+        magiasConhecidas: state.magias.magiasConhecidas.map((m) =>
+          m.id === id ? { ...m, ...partial } : m
+        ),
       },
     })),
 

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { generateId } from '@/lib/utils';
 
 interface AddHabilidadeFormProps {
+  initial?: Habilidade;
   onSave: (h: Habilidade) => void;
   onCancel: () => void;
 }
@@ -18,18 +19,15 @@ const RECUPERA_OPTIONS: { value: RecuperaEm; label: string }[] = [
   { value: 'nunca', label: 'Passiva (sem usos)' },
 ];
 
-/**
- * Formulário para adicionar uma habilidade de classe.
- */
-export function AddHabilidadeForm({
-  onSave,
-  onCancel,
-}: AddHabilidadeFormProps) {
-  const [nome, setNome] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [usosMaximos, setUsosMaximos] = useState('1');
-  const [passiva, setPassiva] = useState(false);
-  const [recuperaEm, setRecuperaEm] = useState<RecuperaEm>('descanso_longo');
+export function AddHabilidadeForm({ initial, onSave, onCancel }: AddHabilidadeFormProps) {
+  const isPassivaInicial = initial ? initial.usosMaximos === null : false;
+  const [nome, setNome] = useState(initial?.nome ?? '');
+  const [descricao, setDescricao] = useState(initial?.descricao ?? '');
+  const [usosMaximos, setUsosMaximos] = useState(String(initial?.usosMaximos ?? '1'));
+  const [passiva, setPassiva] = useState(isPassivaInicial);
+  const [recuperaEm, setRecuperaEm] = useState<RecuperaEm>(
+    isPassivaInicial ? 'descanso_longo' : (initial?.recuperaEm ?? 'descanso_longo')
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -41,11 +39,11 @@ export function AddHabilidadeForm({
 
     const maxUsos = passiva ? null : Math.max(1, parseInt(usosMaximos, 10) || 1);
     onSave({
-      id: generateId(),
+      id: initial?.id ?? generateId(),
       nome: nome.trim(),
       descricao: descricao.trim(),
       usosMaximos: maxUsos,
-      usosAtuais: maxUsos ?? 0,
+      usosAtuais: initial ? (initial.usosAtuais) : (maxUsos ?? 0),
       recuperaEm: passiva ? 'nunca' : recuperaEm,
     });
   };
@@ -107,13 +105,11 @@ export function AddHabilidadeForm({
               onChange={(e) => setRecuperaEm(e.target.value as RecuperaEm)}
               className="rounded-md border border-border-default bg-bg-raised px-3 py-2 text-sm text-text-primary focus:border-accent focus:outline-none"
             >
-              {RECUPERA_OPTIONS.filter((o) => o.value !== 'nunca').map(
-                (opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                )
-              )}
+              {RECUPERA_OPTIONS.filter((o) => o.value !== 'nunca').map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
             </select>
           </div>
         </>
@@ -124,7 +120,7 @@ export function AddHabilidadeForm({
           Cancelar
         </Button>
         <Button type="submit" variant="primary">
-          Adicionar
+          {initial ? 'Salvar' : 'Adicionar'}
         </Button>
       </div>
     </form>

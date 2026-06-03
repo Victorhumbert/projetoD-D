@@ -138,12 +138,26 @@ export function resolverSlots(
   return null;
 }
 
+export function temTruquesAtivos(
+  classeNome: string,
+  subclasseId: string | undefined,
+): boolean {
+  const classeData = CLASSES.find((c) => c.nome === classeNome);
+  if (!classeData) return false;
+  if (subclasseId) {
+    const subData = classeData.subclasses.find((s) => s.id === subclasseId);
+    if (subData?.tem_truques) return true;
+  }
+  return false;
+}
+
 export function temMagiaAtiva(
   classeNome: string,
   subclasseId: string | undefined,
   nivel: number
 ): boolean {
-  return resolverSlots(classeNome, subclasseId, nivel) !== null;
+  if (resolverSlots(classeNome, subclasseId, nivel) !== null) return true;
+  return temTruquesAtivos(classeNome, subclasseId);
 }
 
 const SPELL_LEVELS: NivelMagia[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
