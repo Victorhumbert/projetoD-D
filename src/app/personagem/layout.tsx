@@ -1,7 +1,11 @@
+'use client';
+
+import { useCharacterStore } from '@/store';
 import { TabBar } from '@/components/ui/TabBar';
 import { HeaderActions } from '@/components/HeaderActions';
+import { CLASSES } from '@/data/classes';
 
-const tabs = [
+const ALL_TABS = [
   {
     href: '/personagem/status',
     label: 'Status',
@@ -49,9 +53,16 @@ export default function PersonagemLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const classeNome = useCharacterStore((s) => s.identificacao.classe);
+  const classeData = CLASSES.find((c) => c.nome === classeNome);
+  const temMagia = !classeData || classeData.slotsMagia;
+
+  const tabs = temMagia
+    ? ALL_TABS
+    : ALL_TABS.filter((t) => t.href !== '/personagem/magias');
+
   return (
     <div className="flex flex-col min-h-dvh">
-      {/* Header com nome e ações export/import */}
       <header className="bg-bg-surface border-b border-border-subtle">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -68,7 +79,6 @@ export default function PersonagemLayout({
         <TabBar tabs={tabs} />
       </header>
 
-      {/* Conteúdo da aba */}
       <main
         id="main-content"
         className="flex-1 max-w-5xl mx-auto w-full px-4 py-6 pb-24 md:pb-6"

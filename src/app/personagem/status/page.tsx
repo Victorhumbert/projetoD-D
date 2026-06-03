@@ -7,8 +7,10 @@ import { AtributoCard } from '@/components/status/AtributoCard';
 import { BarraVida } from '@/components/status/BarraVida';
 import { TestesMorte } from '@/components/status/TestesMorte';
 import { TestesResistenciaList } from '@/components/status/TestesResistenciaList';
+import { RacaSelect } from '@/components/status/RacaSelect';
+import { ClasseSelect } from '@/components/status/ClasseSelect';
 import { Card } from '@/components/ui/Card';
-import { ATRIBUTOS_ORDEM, XP_POR_NIVEL, DADO_DE_VIDA_POR_CLASSE } from '@/domain/constants';
+import { ATRIBUTOS_ORDEM, XP_POR_NIVEL } from '@/domain/constants';
 import {
   calcBonusProficiencia,
   calcIniciativa,
@@ -59,6 +61,7 @@ export default function StatusPage() {
   const combate = useCharacterStore((s) => s.combate);
   const setCombate = useCharacterStore((s) => s.setCombate);
   const setIdentificacao = useCharacterStore((s) => s.setIdentificacao);
+  // combate e setCombate permanecem para os campos de CA / deslocamento / dados de vida
 
   const character = useCharacter();
 
@@ -92,49 +95,11 @@ export default function StatusPage() {
                 'text-text-primary placeholder:text-text-muted transition-colors w-full'
               )}
             />
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm text-text-secondary">
-              <input
-                type="text"
-                value={identificacao.raca}
-                placeholder="Raça"
-                aria-label="Raça"
-                onChange={(e) => setIdentificacao({ raca: e.target.value })}
-                className="bg-transparent border-b border-transparent hover:border-border-subtle focus:border-accent focus:outline-none w-24 text-sm"
-              />
-              {identificacao.subRaca && (
-                <>
-                  <span className="text-text-muted">·</span>
-                  <input
-                    type="text"
-                    value={identificacao.subRaca}
-                    placeholder="Sub-raça"
-                    aria-label="Sub-raça"
-                    onChange={(e) =>
-                      setIdentificacao({ subRaca: e.target.value })
-                    }
-                    className="bg-transparent border-b border-transparent hover:border-border-subtle focus:border-accent focus:outline-none w-24 text-sm"
-                  />
-                </>
-              )}
-              <span className="text-text-muted">·</span>
-              <input
-                type="text"
-                value={identificacao.classe}
-                placeholder="Classe"
-                aria-label="Classe"
-                onChange={(e) => {
-                  const classe = e.target.value;
-                  const dadoDeVida =
-                    DADO_DE_VIDA_POR_CLASSE[classe] ?? combate.dadoDeVida;
-                  setIdentificacao({ classe });
-                  setCombate({ dadoDeVida });
-                }}
-                className="bg-transparent border-b border-transparent hover:border-border-subtle focus:border-accent focus:outline-none w-24 text-sm"
-              />
-              <span className="text-text-muted">·</span>
+            <div className="flex items-center gap-x-2 gap-y-0.5 text-sm text-text-secondary flex-wrap">
               <span>Nível</span>
               <input
                 type="number"
+                inputMode="numeric"
                 value={identificacao.nivel}
                 min={1}
                 max={20}
@@ -144,7 +109,7 @@ export default function StatusPage() {
                   if (!isNaN(nivel) && nivel >= 1 && nivel <= 20)
                     setIdentificacao({ nivel });
                 }}
-                className="bg-transparent border-b border-transparent hover:border-border-subtle focus:border-accent focus:outline-none w-10 text-sm text-center"
+                className="bg-transparent border-b border-transparent hover:border-border-subtle focus:border-accent focus:outline-none w-10 text-lg text-center min-h-11"
               />
             </div>
 
@@ -175,6 +140,14 @@ export default function StatusPage() {
             </span>
             Inspiração
           </button>
+        </div>
+      </section>
+
+      {/* ─── Raça e Classe ────────────────────────────────────── */}
+      <section aria-label="Raça e Classe">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <RacaSelect />
+          <ClasseSelect />
         </div>
       </section>
 
@@ -223,6 +196,7 @@ export default function StatusPage() {
               <span className="text-xs text-text-secondary uppercase">CA</span>
               <input
                 type="number"
+                inputMode="numeric"
                 value={combate.classeArmadura}
                 min={0}
                 max={30}
@@ -254,6 +228,7 @@ export default function StatusPage() {
               <div className="flex items-baseline gap-1">
                 <input
                   type="number"
+                  inputMode="numeric"
                   value={combate.deslocamento}
                   min={0}
                   max={20}
@@ -276,6 +251,7 @@ export default function StatusPage() {
               <div className="flex items-baseline gap-1">
                 <input
                   type="number"
+                  inputMode="numeric"
                   value={combate.dadosDeVidaDisponiveis}
                   min={0}
                   max={20}
