@@ -133,26 +133,29 @@ export function SlotConfig() {
             </select>
           </div>
 
-          {/* Totais por nível */}
+          {/* Totais por nível (auto-calculados — editáveis para personalização) */}
           <div className="flex flex-col gap-1">
             <span className="text-xs text-text-secondary uppercase tracking-wide">
               Slots por Nível
             </span>
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+            <p className="text-xs text-text-muted">Calculados automaticamente pela classe e nível. Edite apenas para personalizar.</p>
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
               {NIVEIS.map((n) => (
                 <div key={n} className="flex flex-col items-center gap-1">
                   <span className="text-xs text-text-muted">{n}°</span>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={slots[n].total}
-                    min={0}
-                    max={4}
                     aria-label={`Total de slots de nível ${n}`}
                     onChange={(e) => {
-                      const v = parseInt(e.target.value, 10);
-                      if (!isNaN(v)) updateSlotTotal(n, v);
+                      const raw = e.target.value.replace(/[^0-9]/g, '');
+                      const v = raw === '' ? 0 : parseInt(raw, 10);
+                      updateSlotTotal(n, v);
                     }}
-                    className="w-12 text-center rounded border border-border-default bg-bg-surface py-1 text-sm text-text-primary focus:border-accent focus:outline-none"
+                    onFocus={(e) => e.target.select()}
+                    className="w-12 text-center rounded border border-border-default bg-bg-surface py-1 text-sm text-text-primary focus:border-accent focus:outline-none min-h-11"
                   />
                 </div>
               ))}
@@ -178,29 +181,35 @@ export function SlotConfig() {
                 <div className="flex flex-col gap-1">
                   <span className="text-xs text-text-muted">Nível</span>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={slotsPacto.nivel}
-                    min={1}
-                    max={9}
+                    aria-label="Nível dos slots do pacto"
                     onChange={(e) => {
-                      const v = parseInt(e.target.value, 10);
-                      if (!isNaN(v)) updateSlotsPacto('nivel', v);
+                      const raw = e.target.value.replace(/[^0-9]/g, '');
+                      const v = raw === '' ? 1 : parseInt(raw, 10);
+                      updateSlotsPacto('nivel', v);
                     }}
-                    className="w-14 text-center rounded border border-border-default bg-bg-surface py-1 text-sm text-text-primary focus:border-accent focus:outline-none"
+                    onFocus={(e) => e.target.select()}
+                    className="w-14 text-center rounded border border-border-default bg-bg-surface py-1 text-sm text-text-primary focus:border-accent focus:outline-none min-h-11"
                   />
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-xs text-text-muted">Qtd</span>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={slotsPacto.total}
-                    min={1}
-                    max={4}
+                    aria-label="Quantidade de slots do pacto"
                     onChange={(e) => {
-                      const v = parseInt(e.target.value, 10);
-                      if (!isNaN(v)) updateSlotsPacto('total', v);
+                      const raw = e.target.value.replace(/[^0-9]/g, '');
+                      const v = raw === '' ? 1 : parseInt(raw, 10);
+                      updateSlotsPacto('total', v);
                     }}
-                    className="w-14 text-center rounded border border-border-default bg-bg-surface py-1 text-sm text-text-primary focus:border-accent focus:outline-none"
+                    onFocus={(e) => e.target.select()}
+                    className="w-14 text-center rounded border border-border-default bg-bg-surface py-1 text-sm text-text-primary focus:border-accent focus:outline-none min-h-11"
                   />
                 </div>
               </div>

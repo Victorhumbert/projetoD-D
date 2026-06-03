@@ -4,6 +4,10 @@ export interface Subclasse {
   id: string;
   nome: string;
   descricao: string;
+  slots_magia?: boolean;
+  tipo_conjurador?: 'third' | null;
+  atributo_conjuracao?: 'inteligencia' | null;
+  restricao_escolas?: string[];
 }
 
 export interface CharacterClass {
@@ -18,6 +22,8 @@ export interface CharacterClass {
   pros: string[];
   contras: string[];
   slotsMagia: boolean;
+  tipo_conjurador: 'full' | 'half' | 'warlock' | null;
+  atributo_conjuracao: 'inteligencia' | 'sabedoria' | 'carisma' | null;
   /** Bruxo: slots do pacto recuperam em descanso curto */
   slotsEspeciais?: boolean;
   nivel_subclasse: number;
@@ -47,6 +53,8 @@ export const CLASSES: CharacterClass[] = [
       'Fraco à distância',
     ],
     slotsMagia: false,
+    tipo_conjurador: null,
+    atributo_conjuracao: null,
     nivel_subclasse: 3,
     subclasses: [
       { id: 'berserker', nome: 'Caminho do Berserker', descricao: 'Frenesi: ataque bônus cada turno durante Fúria. Mente Intemerata: imunidade a charme/medo durante Fúria.' },
@@ -72,6 +80,8 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['d8 — frágil', 'Menos slots inicialmente', 'Depende de Carisma'],
     slotsMagia: true,
+    tipo_conjurador: 'full',
+    atributo_conjuracao: 'carisma',
     nivel_subclasse: 3,
     subclasses: [
       { id: 'lore', nome: 'Colégio do Saber', descricao: 'Segredos Mágicos antecipado (nível 6). Palavras Cortantes: usar Inspiração Bárdica contra inimigos.' },
@@ -97,6 +107,8 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['Depende de Sabedoria', 'Papel de curador cria expectativas'],
     slotsMagia: true,
+    tipo_conjurador: 'full',
+    atributo_conjuracao: 'sabedoria',
     nivel_subclasse: 1,
     subclasses: [
       { id: 'vida', nome: 'Domínio da Vida', descricao: 'Melhor curador do jogo. Proficiência em armadura pesada. Bênção do Curandeiro.' },
@@ -126,6 +138,8 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['Sem armadura metálica', 'Complexo de gerenciar', 'Sabedoria é essencial'],
     slotsMagia: true,
+    tipo_conjurador: 'full',
+    atributo_conjuracao: 'sabedoria',
     nivel_subclasse: 2,
     subclasses: [
       { id: 'lua', nome: 'Círculo da Lua', descricao: 'Forma Selvagem de combate desde nível 2. CR máximo muito superior ao padrão.' },
@@ -150,14 +164,16 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['Sem magia no subtipo base', 'Menos utilidade fora do combate'],
     slotsMagia: false,
+    tipo_conjurador: null,
+    atributo_conjuracao: null,
     nivel_subclasse: 3,
     subclasses: [
-      { id: 'campeao', nome: 'Campeão', descricao: 'Crítico em 19–20. Estilo de combate adicional. Simples, mas consistente.' },
-      { id: 'mestre_batalha', nome: 'Mestre de Batalha', descricao: 'Manobras de combate com Dados de Superioridade. Alta versatilidade tática.' },
-      { id: 'cavaleiro_elfico', nome: 'Cavaleiro Élfico', descricao: 'Acesso a magias do Mago (Encantamento e Evocação). Vínculo com armas e armadura.' },
-      { id: 'arqueiro_arcano', nome: 'Arqueiro Arcano', descricao: 'Flechas mágicas com efeitos especiais. Tiro certeiro para ignorar cobertura.' },
-      { id: 'samurai', nome: 'Samurai', descricao: 'Determinação de Combate: vantagem em todos ataques por 1 turno. Espírito inquebrável.' },
-      { id: 'cavaleiro_runa', nome: 'Cavaleiro de Runas', descricao: 'Runas mágicas em armas/armadura. Crescimento gigante temporário.' },
+      { id: 'campeao', nome: 'Campeão', descricao: 'Crítico em 19–20. Estilo de combate adicional. Simples, mas consistente.', slots_magia: false, tipo_conjurador: null, atributo_conjuracao: null },
+      { id: 'mestre_batalha', nome: 'Mestre de Batalha', descricao: 'Manobras de combate com Dados de Superioridade. Alta versatilidade tática.', slots_magia: false, tipo_conjurador: null, atributo_conjuracao: null },
+      { id: 'cavaleiro_arcano', nome: 'Cavaleiro Arcano', descricao: 'Combina maestria marcial com magia de Mago. Abjuração e Evocação. Vínculo com armas e armadura.', slots_magia: true, tipo_conjurador: 'third', atributo_conjuracao: 'inteligencia', restricao_escolas: ['abjuracao', 'evocacao'] },
+      { id: 'arqueiro_arcano', nome: 'Arqueiro Arcano', descricao: 'Flechas mágicas com efeitos especiais. Tiro certeiro para ignorar cobertura.', slots_magia: false, tipo_conjurador: null, atributo_conjuracao: null },
+      { id: 'samurai', nome: 'Samurai', descricao: 'Determinação de Combate: vantagem em todos ataques por 1 turno. Espírito inquebrável.', slots_magia: false, tipo_conjurador: null, atributo_conjuracao: null },
+      { id: 'cavaleiro_runa', nome: 'Cavaleiro de Runas', descricao: 'Runas mágicas em armas/armadura. Crescimento gigante temporário.', slots_magia: false, tipo_conjurador: null, atributo_conjuracao: null },
     ],
   },
   {
@@ -181,6 +197,8 @@ export const CLASSES: CharacterClass[] = [
       'Dois atributos dependentes',
     ],
     slotsMagia: false,
+    tipo_conjurador: null,
+    atributo_conjuracao: null,
     nivel_subclasse: 3,
     subclasses: [
       { id: 'mao_aberta', nome: 'Caminho da Mão Aberta', descricao: 'Técnica da Mão Aberta: empurrar, derrubar ou negar reação ao Flurry of Blows.' },
@@ -210,6 +228,8 @@ export const CLASSES: CharacterClass[] = [
       'Juramento impõe restrições',
     ],
     slotsMagia: true,
+    tipo_conjurador: 'half',
+    atributo_conjuracao: 'carisma',
     nivel_subclasse: 3,
     subclasses: [
       { id: 'devocao', nome: 'Juramento de Devoção', descricao: 'Arma Sagrada: adicionar Carisma ao ataque. Escudo Sagrado. O paladino clássico.' },
@@ -240,6 +260,8 @@ export const CLASSES: CharacterClass[] = [
       'Depende de Des e Sab',
     ],
     slotsMagia: true,
+    tipo_conjurador: 'half',
+    atributo_conjuracao: 'sabedoria',
     nivel_subclasse: 3,
     subclasses: [
       { id: 'cacador', nome: 'Caçador', descricao: 'Presa do Caçador: dano extra no inimigo marcado. Defesas especializadas contra hordas ou grandes criaturas.' },
@@ -264,13 +286,15 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['Apenas 1 ataque por turno', 'd8 — frágil', 'Depende de posicionamento'],
     slotsMagia: false,
+    tipo_conjurador: null,
+    atributo_conjuracao: null,
     nivel_subclasse: 3,
     subclasses: [
-      { id: 'trapaceiro', nome: 'Trapaceiro Arcano', descricao: 'Acesso a magias do Mago (Encantamento e Ilusão). Mão Mágica potenciada.' },
-      { id: 'assassino', nome: 'Assassino', descricao: 'Dano massivo na surpresa. Infiltrar identidades falsas. Venenos.' },
-      { id: 'alma_ladrona', nome: 'Alma Ladrona', descricao: 'Subclasse de suporte/controle. Roubar habilidades de inimigos.' },
-      { id: 'inquisidor', nome: 'Inquisidor Místico', descricao: 'Detectar mentiras. Resistência psíquica. Proficiência em Religião e Arcanismo.' },
-      { id: 'fantasma', nome: 'Fantasma', descricao: 'Atravessar objetos, possuir criaturas. Alta mobilidade sobrenatural.' },
+      { id: 'trapaceiro_arcano', nome: 'Trapaceiro Arcano', descricao: 'Complementa furtividade com magias de Encantamento e Ilusão. Mão Mágica potenciada.', slots_magia: true, tipo_conjurador: 'third', atributo_conjuracao: 'inteligencia', restricao_escolas: ['encantamento', 'ilusao'] },
+      { id: 'assassino', nome: 'Assassino', descricao: 'Dano massivo na surpresa. Infiltrar identidades falsas. Venenos.', slots_magia: false, tipo_conjurador: null, atributo_conjuracao: null },
+      { id: 'alma_ladrona', nome: 'Alma Ladrona', descricao: 'Subclasse de suporte/controle. Roubar habilidades de inimigos.', slots_magia: false, tipo_conjurador: null, atributo_conjuracao: null },
+      { id: 'inquisidor', nome: 'Inquisidor Místico', descricao: 'Detectar mentiras. Resistência psíquica. Proficiência em Religião e Arcanismo.', slots_magia: false, tipo_conjurador: null, atributo_conjuracao: null },
+      { id: 'fantasma', nome: 'Fantasma', descricao: 'Atravessar objetos, possuir criaturas. Alta mobilidade sobrenatural.', slots_magia: false, tipo_conjurador: null, atributo_conjuracao: null },
     ],
   },
   {
@@ -289,6 +313,8 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['Menor lista de magias', 'd6 — extremamente frágil', 'Magias fixas, sem preparar'],
     slotsMagia: true,
+    tipo_conjurador: 'full',
+    atributo_conjuracao: 'carisma',
     nivel_subclasse: 1,
     subclasses: [
       { id: 'draconico', nome: 'Linhagem Dracônica', descricao: 'PV extra por nível. CA natural (13 + Des). Asas dracônicas no nível 14.' },
@@ -315,6 +341,8 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['1–4 slots apenas', 'Lista de magias pequena', 'Fraco sem descansos curtos frequentes'],
     slotsMagia: true,
+    tipo_conjurador: 'warlock',
+    atributo_conjuracao: 'carisma',
     slotsEspeciais: true,
     nivel_subclasse: 1,
     subclasses: [
@@ -341,6 +369,8 @@ export const CLASSES: CharacterClass[] = [
     ],
     contras: ['d6 — o mais frágil', 'Sem armadura', 'Totalmente dependente de Inteligência'],
     slotsMagia: true,
+    tipo_conjurador: 'full',
+    atributo_conjuracao: 'inteligencia',
     nivel_subclasse: 2,
     subclasses: [
       { id: 'abjuracao', nome: 'Escola de Abjuração', descricao: 'Arcane Ward: escudo de PV absorvedores recarregado ao lançar magias de abjuração.' },

@@ -3,7 +3,7 @@
 import { useCharacterStore } from '@/store';
 import { TabBar } from '@/components/ui/TabBar';
 import { HeaderActions } from '@/components/HeaderActions';
-import { CLASSES } from '@/data/classes';
+import { temMagiaAtiva } from '@/domain/calc';
 
 const ALL_TABS = [
   {
@@ -54,8 +54,9 @@ export default function PersonagemLayout({
   children: React.ReactNode;
 }) {
   const classeNome = useCharacterStore((s) => s.identificacao.classe);
-  const classeData = CLASSES.find((c) => c.nome === classeNome);
-  const temMagia = !classeData || classeData.slotsMagia;
+  const subclasseId = useCharacterStore((s) => s.identificacao.subclasse);
+  const nivel = useCharacterStore((s) => s.identificacao.nivel);
+  const temMagia = !classeNome || temMagiaAtiva(classeNome, subclasseId, nivel);
 
   const tabs = temMagia
     ? ALL_TABS

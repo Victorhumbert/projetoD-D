@@ -2,9 +2,15 @@
 
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import type { Character } from '@/types/character';
+import { shallow } from 'zustand/shallow';
+import type { Character, Magias, NivelMagia } from '@/types/character';
 import { loadCharacter, saveCharacter } from '@/lib/storage';
 import { defaultCharacter } from '@/domain/defaultCharacter';
+import {
+  resolverSlots,
+  resolverAtributoConjuracao,
+  buildSlotTotals,
+} from '@/domain/calc';
 
 import {
   createIdentificacaoSlice,
@@ -116,7 +122,6 @@ export const useCharacterStore = create<CharacterStore>()(
 );
 
 // ─── Hidratação inicial ──────────────────────────────────────────────────────
-// Chamado uma única vez no cliente (no Provider).
 let hydrated = false;
 
 export function hydrateStore(): void {
@@ -126,6 +131,79 @@ export function hydrateStore(): void {
   const saved = loadCharacter();
   const char = saved ?? defaultCharacter;
   useCharacterStore.getState().loadFromCharacter(char);
+  syncMagicState();
+}
+
+// ─── Sincronização automática de slots ───────────────────────────────────────
+// Recalcula totais de slots quando classe / nível / subclasse mudam.
+// Nunca zera usados — apenas clamp para não exceder o novo total.
+function syncMagicState(): void {
+  const state = useCharacterStore.getState();
+  const { classe, nivel, subclasse } = state.identificacao;
+
+  const atributoConjuracao = resolverAtributoConjuracao(classe, subclasse);
+  const resolved = resolverSlots(classe, subclasse, nivel);
+
+  useCharacterStore.setState((s) => {
+    const magias = s.magias;
+
+    if (resolved?.tipo === 'warlock') {
+      const pacto = resolved.pacto;
+      const slotsZerados = Object.fromEntries(
+        ([1, 2, 3, 4, 5, 6, 7, 8, 9] as NivelMagia[]).map((n) => [
+          n,
+          { total: 0, usados: 0 },
+        ])
+      ) as Magias['slots'];
+      return {
+        magias: {
+          ...magias,
+          atributoConjuracao,
+          slots: slotsZerados,
+          slotsPacto: {
+            nivel: pacto.nivel_slot as NivelMagia,
+            total: pacto.quantidade,
+            usados: Math.min(magias.slotsPacto?.usados ?? 0, pacto.quantidade),
+          },
+        },
+      };
+    }
+
+    if (resolved?.tabela) {
+      const totais = buildSlotTotals(resolved.tabela);
+      const newSlots = { ...magias.slots } as Magias['slots'];
+      for (const n of [1, 2, 3, 4, 5, 6, 7, 8, 9] as NivelMagia[]) {
+        newSlots[n] = {
+          total: totais[n],
+          usados: Math.min(magias.slots[n].usados, totais[n]),
+        };
+      }
+      return {
+        magias: {
+          ...magias,
+          atributoConjuracao,
+          slots: newSlots,
+          slotsPacto: null,
+        },
+      };
+    }
+
+    // Sem magia — zera totais, mantém usados clamped em 0
+    const slotsZerados = Object.fromEntries(
+      ([1, 2, 3, 4, 5, 6, 7, 8, 9] as NivelMagia[]).map((n) => [
+        n,
+        { total: 0, usados: 0 },
+      ])
+    ) as Magias['slots'];
+    return {
+      magias: {
+        ...magias,
+        atributoConjuracao: null,
+        slots: slotsZerados,
+        slotsPacto: null,
+      },
+    };
+  });
 }
 
 // ─── Persistência com debounce ───────────────────────────────────────────────
@@ -144,7 +222,17 @@ function scheduleSave(): void {
 if (typeof window !== 'undefined') {
   useCharacterStore.subscribe(scheduleSave);
 
-  // Flush imediato ao fechar a aba.
+  // Auto-sync de slots quando classe / nível / subclasse mudam
+  useCharacterStore.subscribe(
+    (s) => ({
+      classe: s.identificacao.classe,
+      nivel: s.identificacao.nivel,
+      subclasse: s.identificacao.subclasse,
+    }),
+    syncMagicState,
+    { equalityFn: shallow }
+  );
+
   window.addEventListener('beforeunload', () => {
     if (debounceTimer) clearTimeout(debounceTimer);
     const char = useCharacterStore.getState().toCharacter();
