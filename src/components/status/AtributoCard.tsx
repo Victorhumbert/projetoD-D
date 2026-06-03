@@ -39,6 +39,7 @@ export function AtributoCard({ nome }: AtributoCardProps) {
       </span>
       <input
         type="number"
+        inputMode="numeric"
         value={valor}
         min={1}
         max={30}
@@ -49,7 +50,7 @@ export function AtributoCard({ nome }: AtributoCardProps) {
         }}
         className={cn(
           'w-12 text-center rounded border border-border-default bg-bg-surface',
-          'py-0.5 text-base text-text-primary focus:border-accent focus:outline-none'
+          'py-1.5 text-base text-text-primary focus:border-accent focus:outline-none min-h-11'
         )}
       />
       <span className="text-xs text-text-muted">{config.label}</span>

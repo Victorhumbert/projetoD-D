@@ -63,6 +63,7 @@ export function BarraVida() {
           </label>
           <input
             type="number"
+            inputMode="numeric"
             value={pvMax}
             min={1}
             max={999}
@@ -82,22 +83,37 @@ export function BarraVida() {
           <label className="text-xs text-text-secondary uppercase tracking-wide">
             PV Atual
           </label>
-          <input
-            type="number"
-            value={pvAtual}
-            min={0}
-            max={pvMax}
-            aria-label="Pontos de vida atuais"
-            onChange={(e) => {
-              const v = parseInt(e.target.value, 10);
-              if (!isNaN(v)) setPvAtual(v);
-            }}
-            className={cn(
-              'rounded border-2 bg-bg-raised px-2 py-1 text-sm text-text-primary font-semibold',
-              'focus:outline-none transition-colors',
-              borderColor
-            )}
-          />
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              aria-label="Diminuir PV"
+              onClick={() => setPvAtual(Math.max(0, pvAtual - 1))}
+              className="w-9 h-9 rounded-lg bg-bg-raised border border-border-subtle text-text-primary hover:bg-danger/20 hover:border-danger flex items-center justify-center text-lg font-bold active:scale-95 transition-all shrink-0"
+            >−</button>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={pvAtual}
+              min={0}
+              max={pvMax}
+              aria-label="Pontos de vida atuais"
+              onChange={(e) => {
+                const v = parseInt(e.target.value, 10);
+                if (!isNaN(v)) setPvAtual(v);
+              }}
+              className={cn(
+                'w-full rounded border-2 bg-bg-raised px-2 py-1 text-base text-text-primary font-semibold text-center',
+                'focus:outline-none transition-colors min-h-9',
+                borderColor
+              )}
+            />
+            <button
+              type="button"
+              aria-label="Aumentar PV"
+              onClick={() => setPvAtual(Math.min(pvMax, pvAtual + 1))}
+              className="w-9 h-9 rounded-lg bg-bg-raised border border-border-subtle text-text-primary hover:bg-success/20 hover:border-success flex items-center justify-center text-lg font-bold active:scale-95 transition-all shrink-0"
+            >+</button>
+          </div>
         </div>
 
         <div className="flex flex-col gap-1">
@@ -106,6 +122,7 @@ export function BarraVida() {
           </label>
           <input
             type="number"
+            inputMode="numeric"
             value={pvTemp}
             min={0}
             max={999}
