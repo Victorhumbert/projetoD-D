@@ -34,6 +34,11 @@ export type RecuperaEm =
   | 'amanhecer'
   | 'nunca';
 
+export interface BonusRacaEscolhidos {
+  atributos: AtributoNome[];
+  pericias: PericiaNome[];
+}
+
 export interface Identificacao {
   nome: string;
   raca: string;
@@ -44,6 +49,7 @@ export interface Identificacao {
   antecedente: string;
   xp: number;
   inspiracao: boolean;
+  bonusRacaEscolhidos?: BonusRacaEscolhidos;
 }
 
 export interface Combate {

@@ -1,8 +1,9 @@
 'use client';
 
 import { useCharacterStore } from '@/store';
-import { RACAS, type Raca } from '@/data/racas';
-import type { AtributoNome } from '@/types/character';
+import { RACAS, type Raca, type SubRaca } from '@/data/racas';
+import { PERICIAS_CONFIG } from '@/domain/constants';
+import type { AtributoNome, PericiaNome, BonusRacaEscolhidos } from '@/types/character';
 import { cn } from '@/lib/utils';
 
 const SELECT_CLASS = cn(
@@ -11,44 +12,70 @@ const SELECT_CLASS = cn(
   'min-h-[44px]'
 );
 
+const ATRIBUTOS_LABELS: Record<AtributoNome, string> = {
+  forca: 'Força',
+  destreza: 'Destreza',
+  constituicao: 'Constituição',
+  inteligencia: 'Inteligência',
+  sabedoria: 'Sabedoria',
+  carisma: 'Carisma',
+};
+const ATRIBUTOS_ORDEM: AtributoNome[] = [
+  'forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma',
+];
+
 /**
- * Computa o mapa de bônus combinados (raça + sub-raça).
+ * Computa o mapa de bônus combinados (raça + sub-raça + escolhas livres).
+ * Quando a sub-raça tem sobrescreverBonusBase, os bônus da raça-mãe são ignorados.
  */
 function getBonusCombinado(
   raca: Raca | undefined,
-  subRacaId: string
+  subRacaId: string,
+  escolhasAtributos: AtributoNome[] = []
 ): Partial<Record<AtributoNome, number>> {
   if (!raca) return {};
-  const bonus: Partial<Record<AtributoNome, number>> = { ...raca.bonusAtributos };
-  const sub = raca.subRacas.find((s) => s.id === subRacaId);
+  const sub: SubRaca | undefined = raca.subRacas.find((s) => s.id === subRacaId);
+
+  const bonus: Partial<Record<AtributoNome, number>> = sub?.sobrescreverBonusBase
+    ? {}
+    : { ...raca.bonusAtributos };
+
   if (sub) {
     for (const [attr, val] of Object.entries(sub.bonusAtributos) as [AtributoNome, number][]) {
       bonus[attr] = (bonus[attr] ?? 0) + val;
     }
   }
+
+  for (const attr of escolhasAtributos) {
+    bonus[attr] = (bonus[attr] ?? 0) + 1;
+  }
+
   return bonus;
 }
 
-/**
- * Selects de raça e sub-raça com aplicação automática de bônus nos atributos.
- * Ao trocar de raça: subtrai os bônus antigos e soma os novos.
- */
 export function RacaSelect() {
   const raca = useCharacterStore((s) => s.identificacao.raca);
   const subRaca = useCharacterStore((s) => s.identificacao.subRaca ?? '');
+  const bonusRacaEscolhidos = useCharacterStore((s) => s.identificacao.bonusRacaEscolhidos);
   const setIdentificacao = useCharacterStore((s) => s.setIdentificacao);
   const atributos = useCharacterStore((s) => s.atributos);
   const setAtributo = useCharacterStore((s) => s.setAtributo);
   const setCombate = useCharacterStore((s) => s.setCombate);
 
   const racaAtual = RACAS.find((r) => r.id === raca);
+  const subAtual = racaAtual?.subRacas.find((s) => s.id === subRaca);
+  const escolhasAtributos = bonusRacaEscolhidos?.atributos ?? [];
+  const escolhasPericias = bonusRacaEscolhidos?.pericias ?? [];
 
-  function aplicarBonusRaca(novaRacaId: string, novaSubRacaId: string) {
-    const bonusAntigo = getBonusCombinado(racaAtual, subRaca);
+  function aplicarBonusRaca(
+    novaRacaId: string,
+    novaSubRacaId: string,
+    novasEscolhas: AtributoNome[]
+  ) {
+    const bonusAntigo = getBonusCombinado(racaAtual, subRaca, escolhasAtributos);
     const novaRaca = RACAS.find((r) => r.id === novaRacaId);
-    const bonusNovo = getBonusCombinado(novaRaca, novaSubRacaId);
+    const bonusNovo = getBonusCombinado(novaRaca, novaSubRacaId, novasEscolhas);
 
-    // Atributos afetados por um dos dois conjuntos de bônus
     const attrs = new Set([
       ...Object.keys(bonusAntigo),
       ...Object.keys(bonusNovo),
@@ -59,37 +86,63 @@ export function RacaSelect() {
       const antigo = bonusAntigo[attr] ?? 0;
       const novo = bonusNovo[attr] ?? 0;
       const diff = novo - antigo;
-      if (diff !== 0) {
-        setAtributo(attr, valorAtual + diff);
-      }
+      if (diff !== 0) setAtributo(attr, valorAtual + diff);
     }
 
-    if (novaRaca) {
-      setCombate({ deslocamento: novaRaca.deslocamento });
-    }
+    if (novaRaca) setCombate({ deslocamento: novaRaca.deslocamento });
   }
 
   function handleRacaChange(novaRacaId: string) {
-    aplicarBonusRaca(novaRacaId, '');
-    setIdentificacao({ raca: novaRacaId, subRaca: '' });
+    aplicarBonusRaca(novaRacaId, '', []);
+    setIdentificacao({ raca: novaRacaId, subRaca: '', bonusRacaEscolhidos: undefined });
   }
 
   function handleSubRacaChange(novaSubRacaId: string) {
-    // Para sub-raça, reaplica considerando a mesma raça-mãe mas nova sub-raça
-    aplicarBonusRaca(raca, novaSubRacaId);
-    setIdentificacao({ subRaca: novaSubRacaId });
+    aplicarBonusRaca(raca, novaSubRacaId, []);
+    setIdentificacao({ subRaca: novaSubRacaId, bonusRacaEscolhidos: undefined });
+  }
+
+  function handleEscolhaAtributo(index: number, novoAttr: AtributoNome | '') {
+    const novas = [...escolhasAtributos];
+    if (novoAttr === '') {
+      novas.splice(index, 1);
+    } else {
+      novas[index] = novoAttr;
+    }
+    aplicarBonusRaca(raca, subRaca, novas);
+    const next: BonusRacaEscolhidos = {
+      atributos: novas,
+      pericias: escolhasPericias,
+    };
+    setIdentificacao({ bonusRacaEscolhidos: next });
+  }
+
+  function handleEscolhaPericia(index: number, novaPericia: PericiaNome | '') {
+    const novas = [...escolhasPericias];
+    if (novaPericia === '') {
+      novas.splice(index, 1);
+    } else {
+      novas[index] = novaPericia;
+    }
+    setIdentificacao({
+      bonusRacaEscolhidos: { atributos: escolhasAtributos, pericias: novas },
+    });
   }
 
   const tracosRaca = racaAtual?.tracos ?? [];
-  const subRacaSelecionada = racaAtual?.subRacas.find((s) => s.id === subRaca);
-  const tracosSubRaca = subRacaSelecionada?.tracos ?? [];
+  const tracosSubRaca = subAtual?.tracos ?? [];
   const todosTracos = [...tracosRaca, ...tracosSubRaca];
+  const numEscolhaAtributos = subAtual?.escolhaAtributos ?? 0;
+  const numEscolhaPericias = subAtual?.escolhaPericias ?? 0;
 
   return (
     <div className="flex flex-col gap-3">
       {/* Select de raça */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="select-raca" className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
+        <label
+          htmlFor="select-raca"
+          className="text-xs font-semibold text-text-secondary uppercase tracking-wide"
+        >
           Raça
         </label>
         <select
@@ -110,7 +163,10 @@ export function RacaSelect() {
       {/* Select de sub-raça (condicional) */}
       {racaAtual && racaAtual.subRacas.length > 0 && (
         <div className="flex flex-col gap-1">
-          <label htmlFor="select-subraca" className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
+          <label
+            htmlFor="select-subraca"
+            className="text-xs font-semibold text-text-secondary uppercase tracking-wide"
+          >
             Sub-raça
           </label>
           <select
@@ -129,6 +185,75 @@ export function RacaSelect() {
         </div>
       )}
 
+      {/* Seletores de atributos livres (Humano Variante) */}
+      {numEscolhaAtributos > 0 && (
+        <div className="flex flex-col gap-2">
+          <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
+            Atributos com +1 (escolha {numEscolhaAtributos})
+          </p>
+          {Array.from({ length: numEscolhaAtributos }).map((_, i) => {
+            const valor = escolhasAtributos[i] ?? '';
+            const outrasEscolhas = escolhasAtributos.filter((_, j) => j !== i);
+            return (
+              <select
+                key={i}
+                value={valor}
+                aria-label={`Atributo ${i + 1} com bônus +1`}
+                onChange={(e) =>
+                  handleEscolhaAtributo(i, e.target.value as AtributoNome | '')
+                }
+                className={SELECT_CLASS}
+              >
+                <option value="">Escolher atributo...</option>
+                {ATRIBUTOS_ORDEM.map((a) => (
+                  <option
+                    key={a}
+                    value={a}
+                    disabled={outrasEscolhas.includes(a)}
+                  >
+                    {ATRIBUTOS_LABELS[a]}
+                  </option>
+                ))}
+              </select>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Seletor de perícia livre (Humano Variante) */}
+      {numEscolhaPericias > 0 && (
+        <div className="flex flex-col gap-2">
+          <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
+            Perícia com proficiência (escolha {numEscolhaPericias})
+          </p>
+          {Array.from({ length: numEscolhaPericias }).map((_, i) => {
+            const valor = escolhasPericias[i] ?? '';
+            const outras = escolhasPericias.filter((_, j) => j !== i);
+            return (
+              <select
+                key={i}
+                value={valor}
+                aria-label={`Perícia ${i + 1} com proficiência bônus`}
+                onChange={(e) =>
+                  handleEscolhaPericia(i, e.target.value as PericiaNome | '')
+                }
+                className={SELECT_CLASS}
+              >
+                <option value="">Escolher perícia...</option>
+                {(Object.keys(PERICIAS_CONFIG) as PericiaNome[]).map((p) => (
+                  <option key={p} value={p} disabled={outras.includes(p)}>
+                    {PERICIAS_CONFIG[p].label}
+                  </option>
+                ))}
+              </select>
+            );
+          })}
+          <p className="text-xs text-text-muted italic">
+            Marque a proficiência manualmente na aba Perícias.
+          </p>
+        </div>
+      )}
+
       {/* Informações da raça */}
       {racaAtual && (
         <div className="flex flex-col gap-1.5 rounded-lg border border-border-subtle bg-bg-raised px-3 py-2.5">
@@ -142,10 +267,18 @@ export function RacaSelect() {
           )}
 
           {todosTracos.length > 0 && (
-            <ul className="flex flex-col gap-0.5 mt-0.5" aria-label={`Traços de ${racaAtual.nome}`}>
+            <ul
+              className="flex flex-col gap-0.5 mt-0.5"
+              aria-label={`Traços de ${racaAtual.nome}`}
+            >
               {todosTracos.map((traco) => (
-                <li key={traco} className="text-xs text-text-secondary flex items-start gap-1.5">
-                  <span className="text-accent mt-px" aria-hidden="true">·</span>
+                <li
+                  key={traco}
+                  className="text-xs text-text-secondary flex items-start gap-1.5"
+                >
+                  <span className="text-accent mt-px" aria-hidden="true">
+                    ·
+                  </span>
                   {traco}
                 </li>
               ))}

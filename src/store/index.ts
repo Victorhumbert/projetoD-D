@@ -89,11 +89,16 @@ export const useCharacterStore = create<CharacterStore>()(
     atualizadoEm: defaultCharacter.atualizadoEm,
 
     loadFromCharacter: (char: Character) => {
+      // Migração: Humano sem sub-raça (saves pré-variante) → humano_padrao
+      const identificacaoMigrada = char.identificacao.raca === 'humano' && !char.identificacao.subRaca
+        ? { ...char.identificacao, subRaca: 'humano_padrao' }
+        : char.identificacao;
+
       set({
         characterId: char.id,
         versaoSchema: char.versaoSchema,
         atualizadoEm: char.atualizadoEm,
-        identificacao: char.identificacao,
+        identificacao: identificacaoMigrada,
         combate: char.combate,
         testesMorte: char.testesMorte,
         atributos: char.atributos,

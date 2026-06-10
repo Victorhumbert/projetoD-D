@@ -5,6 +5,12 @@ export interface SubRaca {
   nome: string;
   bonusAtributos: Partial<Record<AtributoNome, number>>;
   tracos: string[];
+  /** Quantos atributos o jogador escolhe livremente (+1 cada) */
+  escolhaAtributos?: number;
+  /** Quantas perícias o jogador escolhe para proficiência */
+  escolhaPericias?: number;
+  /** Se true, ignora os bônus fixos da raça-mãe (substitui em vez de somar) */
+  sobrescreverBonusBase?: boolean;
 }
 
 export interface Raca {
@@ -104,16 +110,36 @@ export const RACAS: Raca[] = [
     id: 'humano',
     nome: 'Humano',
     deslocamento: 9,
-    bonusAtributos: {
-      forca: 1,
-      destreza: 1,
-      constituicao: 1,
-      inteligencia: 1,
-      sabedoria: 1,
-      carisma: 1,
-    },
-    tracos: ['Bônus +1 em todos os atributos', '1 idioma extra à escolha'],
-    subRacas: [],
+    bonusAtributos: {},
+    tracos: [],
+    subRacas: [
+      {
+        id: 'humano_padrao',
+        nome: 'Padrão',
+        bonusAtributos: {
+          forca: 1,
+          destreza: 1,
+          constituicao: 1,
+          inteligencia: 1,
+          sabedoria: 1,
+          carisma: 1,
+        },
+        tracos: ['Bônus +1 em todos os atributos', '1 idioma extra à escolha'],
+      },
+      {
+        id: 'humano_variante',
+        nome: 'Variante',
+        bonusAtributos: {},
+        sobrescreverBonusBase: true,
+        escolhaAtributos: 2,
+        escolhaPericias: 1,
+        tracos: [
+          '+1 em 2 atributos à escolha',
+          'Proficiência em 1 perícia à escolha',
+          '1 Talento à escolha (requer aprovação do DM)',
+        ],
+      },
+    ],
   },
   {
     id: 'draconato',
